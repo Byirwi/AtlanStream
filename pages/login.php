@@ -12,15 +12,15 @@ if (isLoggedIn()) {
 
 // Traitement du formulaire de connexion
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+    $identifier = trim($_POST['identifier'] ?? ''); // Peut être un nom d'utilisateur ou un email
+    $password = $_POST['password'] ?? '';
     
-    if (empty($username) || empty($password)) {
+    if (empty($identifier) || empty($password)) {
         $loginError = "Tous les champs sont obligatoires.";
     } else {
-        // Rechercher l'utilisateur dans la base de données
-        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
-        $stmt->execute([$username]);
+        // Rechercher l'utilisateur par nom d'utilisateur ou email avec une seule requête
+        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ? OR email = ?");
+        $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch();
         
         // Vérifier si l'utilisateur existe et si le mot de passe est correct
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: catalogue.php");
             exit;
         } else {
-            $loginError = "Nom d'utilisateur ou mot de passe incorrect.";
+            $loginError = "Identifiant ou mot de passe incorrect.";
         }
     }
 }
@@ -84,8 +84,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <form action="login.php" method="POST">
                 <div class="form-group">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input type="text" id="username" name="username" required>
+                    <label for="identifier">Nom d'utilisateur ou Email</label>
+                    <input type="text" id="identifier" name="identifier" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Mot de passe</label>

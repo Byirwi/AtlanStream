@@ -1,3 +1,10 @@
+<?php
+require_once '../includes/session.php';
+require_once '../config/database.php';
+
+// Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+redirectIfNotLoggedIn();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,7 +13,7 @@
     <title>AtlanStream - Catalogue</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body>
+<body class="dark">
     <header>
         <div class="logo">
             <h1>AtlanStream</h1>
@@ -14,7 +21,13 @@
         <nav>
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
-                <li><a href="login.php">Connexion</a></li>
+                <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
+                        <span id="theme-icon">☀️</span>
+                    </button>
+                </li>
             </ul>
         </nav>
     </header>
@@ -97,5 +110,7 @@
     <footer>
         <p>&copy; 2023 AtlanStream - Tous droits réservés</p>
     </footer>
+    
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

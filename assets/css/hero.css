@@ -1,0 +1,46 @@
+.hero {
+    height: 80vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('https://via.placeholder.com/1920x1080?text=AtlanStream+Background') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(var(--primary-color-rgb), 0.2) 0%, transparent 70%);
+    z-index: 1;
+}
+
+.hero-content {
+    max-width: 800px;
+    padding: 40px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    box-shadow: var(--shadow-strong);
+    position: relative;
+    z-index: 2;
+}
+
+.hero-content h2 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    color: var(--light-text);
+}

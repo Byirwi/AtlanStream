@@ -52,5 +52,6 @@ require_once '../includes/session.php';
         <p>&copy; 2023 AtlanStream - Tous droits réservés</p>
     </footer>
     
+    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

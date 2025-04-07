@@ -1,19 +1,19 @@
 /* Variables de thème essentielles */
 :root {
     /* Couleurs pour les deux thèmes */
-    --primary-color-dark: #38B2AC;
-    --primary-color-dark-hover: #2C9D98;
-    --secondary-color-dark: #234E52;
-    --accent-color-dark: #805AD5;
-    --accent-color-dark-soft: rgba(128, 90, 213, 0.2);
-    
-    --primary-color-light: #4FD1C5;
-    --primary-color-light-hover: #38B2AC;
-    --secondary-color-light: #63B3ED;
-    --accent-color-light: #ECC94B;
-    --accent-color-light-soft: rgba(236, 201, 75, 0.15);
-    --soft-blue-light: #E6F6FF;
-    --soft-aqua-light: #E6FFFA;
+    --primary-color-dark: #38B2AC;      /* Cyan lumineux pour thème sombre */
+    --primary-color-dark-hover: #2C9D98; /* Version plus foncée au survol */
+    --secondary-color-dark: #234E52;    /* Bleu-vert profond pour thème sombre */
+    --accent-color-dark: #805AD5;       /* Accent violet mystique pour thème sombre */
+    --accent-color-dark-soft: rgba(128, 90, 213, 0.2); /* Version transparente de l'accent */
+
+    --primary-color-light: #4FD1C5;     /* Turquoise principal pour thème clair */
+    --primary-color-light-hover: #38B2AC; /* Version plus foncée au survol */
+    --secondary-color-light: #63B3ED;   /* Bleu secondaire pour thème clair */
+    --accent-color-light: #ECC94B;      /* Accent or clair pour thème clair */
+    --accent-color-light-soft: rgba(236, 201, 75, 0.15); /* Version transparente de l'accent */
+    --soft-blue-light: #E6F6FF;         /* Bleu très clair pour les accents subtils */
+    --soft-aqua-light: #E6FFFA;         /* Turquoise très clair pour les fonds */
 }
 
 /* Variables pour le thème sombre */

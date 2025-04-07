@@ -1,0 +1,90 @@
+====================================================
+ATLANSTREAM - DOCUMENTATION
+====================================================
+
+DESCRIPTION
+----------------------------------------------------
+AtlanStream est un site de streaming inspiré de l'univers mythique de l'Atlantide.
+Le site propose une interface moderne inspirée de Netflix, permettant aux utilisateurs
+de découvrir une collection de films sur le thème de l'Atlantide et des civilisations sous-marines.
+
+FONCTIONNALITÉS
+----------------------------------------------------
+- Système d'authentification complet (inscription, connexion, déconnexion)
+- Email facultatif lors de l'inscription
+- Connexion possible par nom d'utilisateur ou email
+- Catalogue de films accessible uniquement aux utilisateurs connectés
+- Thème sombre ("Abysses Mystiques") et clair ("Aurore Atlantique")
+- Changement de thème en temps réel avec sauvegarde de préférence
+- Design responsive adapté à tous les appareils
+
+INSTALLATION
+----------------------------------------------------
+1. Placer le dossier AtlanStream dans le répertoire www de votre serveur WAMP
+2. Créer une base de données MySQL nommée 'atlanstream'
+3. Importer le fichier db_init.sql pour créer la structure de la base de données
+4. Configurer la connexion à la base de données dans config/database.php si nécessaire
+5. Accéder au site via: http://localhost/Projets/AtlanStream/pages/Accueil.php
+
+STRUCTURE DES FICHIERS
+----------------------------------------------------
+AtlanStream/
+├── config/
+│   └── database.php          (configuration de la base de données)
+├── includes/
+│   └── session.php           (gestion des sessions)
+├── pages/
+│   ├── Accueil.php           (page d'accueil)
+│   ├── login.php             (page de connexion)
+│   ├── register.php          (page d'inscription)
+│   ├── catalogue.php         (catalogue des films - accès protégé)
+│   └── logout.php            (déconnexion)
+├── assets/
+│   ├── css/
+│   │   └── style.css         (styles et thèmes)
+│   └── js/
+│       └── theme.js          (gestion du thème clair/sombre)
+└── db_init.sql               (script ²d'initialisation de la base de données)
+
+PALETTES DE COULEURS
+----------------------------------------------------
+Thème sombre "Abysses Mystiques":
+- Fond principal: #1A202C (bleu nuit)
+- Fond secondaire: #171923
+- Fond des cartes: #2D3748
+- Cyan lumineux: #38B2AC (couleur principale)
+- Violet mystique: #805AD5 (couleur d'accent)
+- Texte clair: #E2E8F0
+
+Thème clair "Aurore Atlantique":
+- Fond principal: #F7FAFC (blanc cassé)
+- Fond secondaire: #EDF2F7
+- Fond des cartes: #FFFFFF
+- Turquoise: #4FD1C5 (couleur principale)
+- Bleu ciel: #63B3ED (couleur secondaire)
+- Or clair: #ECC94B (couleur d'accent)
+- Texte principal: #2D3748 (bleu marine)
+
+COMPTE DE TEST
+----------------------------------------------------
+Nom d'utilisateur: test
+Mot de passe: test123
+
+DÉVELOPPEMENT
+----------------------------------------------------
+Le projet utilise:
+- PHP pour le backend et la gestion des sessions
+- MySQL pour la base de données
+- JavaScript pour les interactions côté client (changement de thème)
+- CSS avec variables pour la gestion des thèmes
+- Dégradés et effets visuels pour une expérience immersive
+
+NOTES D'UTILISATION
+----------------------------------------------------
+- Pour basculer entre les thèmes, cliquez sur le bouton soleil/lune dans la barre de navigation
+- Le thème choisi est enregistré dans le localStorage du navigateur
+- Les formulaires supportent la validation des données côté serveur
+- Le système de connexion accepte soit le nom d'utilisateur, soit l'email (si fourni)
+
+----------------------------------------------------
+© 2023 AtlanStream - Tous droits réservés

@@ -125,6 +125,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p>&copy; 2023 AtlanStream - Tous droits réservés</p>
     </footer>
     
-    <script src="../assets/js/theme.js"></script>
 </body>
 </html>

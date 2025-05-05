@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/session.php';
-require_once '../config/database.php';
+require_once '../config/db_connect.php';
 
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();

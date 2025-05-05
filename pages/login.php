@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Si l'utilisateur est un admin, enregistrer ce statut et rediriger vers le tableau de bord admin
             if (isset($user['is_admin']) && $user['is_admin'] == 1) {
                 $_SESSION['is_admin'] = true;
-                header("Location: admin/dashboard.php");
+                header("Location: admin/admin_dashboard.php");
                 exit;
             } else {
                 // Sinon, rediriger vers le catalogue normal

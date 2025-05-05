@@ -1,39 +1,17 @@
 <?php
-// Activer l'affichage des erreurs pour déboguer
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Inclure les fichiers nécessaires - chemins corrigés car nous sommes dans pages/admin
 require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/admin-auth.php';
-
-// Tester si la session admin est correctement configurée
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    echo "<div style='color:red;padding:20px;'>";
-    echo "Erreur: Vous n'êtes pas connecté en tant qu'administrateur.<br>";
-    echo "SESSION: <pre>" . print_r($_SESSION, true) . "</pre>";
-    echo "</div>";
-    exit;
-}
 
 // Vérification des droits admin
 redirectIfNotAdmin();
 
 // Statistiques basiques
-try {
-    $stats = [
-        'films' => $pdo->query("SELECT COUNT(*) FROM movies")->fetchColumn(),
-        'categories' => $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn(),
-        'users' => $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn()
-    ];
-} catch (PDOException $e) {
-    echo "<div style='color:red;padding:20px;'>";
-    echo "Erreur de base de données: " . $e->getMessage() . "<br>";
-    echo "SESSION: <pre>" . print_r($_SESSION, true) . "</pre>";
-    echo "</div>";
-    exit;
-}
+$stats = [
+    'films' => $pdo->query("SELECT COUNT(*) FROM movies")->fetchColumn(),
+    'categories' => $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn(),
+    'users' => $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn()
+];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -51,7 +29,7 @@ try {
         </div>
         <nav>
             <ul>
-                <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username'] ?? 'Inconnu'); ?></span></li>
+                <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                 <li><a href="../Accueil.php">Voir le site</a></li>
                 <li><a href="../logout.php" class="logout-btn">Déconnexion</a></li>
                 <li>

@@ -258,7 +258,7 @@ nav ul li a:hover {
     padding: 40px;
     width: 100%;
     max-width: 450px;
-    transform: perspective(1000px) rotateX(0deg);
+    transform: perspective(10px) rotateX(0deg);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }

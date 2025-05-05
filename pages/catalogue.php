@@ -5,6 +5,40 @@ require_once '../includes/admin-auth.php';
 
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();
+
+// Récupérer les films depuis la base de données
+try {
+    $stmt = $pdo->query("SELECT movies.*, categories.name as category_name FROM movies 
+                         LEFT JOIN categories ON movies.category_id = categories.id 
+                         LIMIT 30");
+    $movies = $stmt->fetchAll();
+} catch (Exception $e) {
+    // En cas d'erreur, initialiser $movies comme un tableau vide
+    $movies = [];
+    // Éventuellement journaliser l'erreur
+    error_log("Erreur lors de la récupération des films: " . $e->getMessage());
+}
+
+// Si aucun film n'a été trouvé ou en cas d'erreur, créer des exemples statiques
+if (empty($movies)) {
+    $movies = [
+        [
+            'id' => 1,
+            'title' => 'La Cité Perdue',
+            'description' => 'Un explorateur découvre les vestiges d\'une civilisation sous-marine avancée.',
+            'poster_url' => 'default.jpg',
+            'category_name' => 'Aventure'
+        ],
+        [
+            'id' => 2,
+            'title' => 'Les Secrets d\'Atlantis',
+            'description' => 'Une équipe de scientifiques révèle les mystères de la technologie atlante.',
+            'poster_url' => 'default.jpg',
+            'category_name' => 'Documentaire'
+        ],
+        // Ajoutez d'autres films statiques si nécessaire
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -63,12 +97,17 @@ redirectIfNotLoggedIn();
                         </div>
                     <?php endif; ?>
                     <div class="movie-poster">
-                        <img src="https://via.placeholder.com/300x450?text=<?= urlencode($movie['title']) ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
+                        <?php 
+                        $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../public/images/' . $movie['poster_url']) 
+                            ? '../public/images/' . $movie['poster_url'] 
+                            : '../public/images/default.jpg';
+                        ?>
+                        <img src="<?= $poster ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
                     </div>
                     <div class="movie-info">
                         <h3><?= htmlspecialchars($movie['title']) ?></h3>
                         <p><?= htmlspecialchars($movie['description']) ?></p>
-                        <span class="movie-category"><?= htmlspecialchars($movie['category']) ?></span>
+                        <span class="movie-category"><?= htmlspecialchars($movie['category_name'] ?? 'Non catégorisé') ?></span>
                     </div>
                 </div>
             <?php endforeach; ?>

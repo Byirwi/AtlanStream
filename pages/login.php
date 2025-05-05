@@ -54,7 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <nav>
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
-                <li><a href="register.php">Inscription</a></li>
+                <?php if (isLoggedIn()): ?>
+                    <li><a href="compte.php">Mon compte</a></li>
+                    <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+                <?php else: ?>
+                    <li><a href="register.php">Inscription</a></li>
+                <?php endif; ?>
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
                         <span id="theme-icon">☀️</span>

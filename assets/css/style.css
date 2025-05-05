@@ -340,23 +340,13 @@ nav ul li a:hover {
     font-size: 2.8rem;
     color: var(--primary-color);
     margin-bottom: 15px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    background: var(--gradient-button);
-    -webkit-background-clip: text;
-    -moz-background-clip: text;
-    -ms-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -moz-text-fill-color: transparent;
-    color: transparent; /* Fallback pour les navigateurs qui ne supportent pas -webkit-text-fill-color */
+    text-shadow: 0 2px 8px rgba(56,178,172,0.4), 0 1px 2px rgba(0,0,0,0.5);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: unset;
+    color: var(--primary-color);
     display: inline-block;
-}
-
-.catalogue-header p {
-    color: var(--gray-text);
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto;
 }
 
 .movies-grid {
@@ -691,6 +681,15 @@ footer {
 /* Styles spécifiques au thème sombre */
 .dark .movie-poster::before {
     background: linear-gradient(to bottom, transparent 60%, rgba(45, 55, 72, 0.8) 100%);
+}
+
+.dark .catalogue-header h2 {
+    color: #4FD1C5;
+    text-shadow: 0 2px 12px rgba(79,209,197,0.7), 0 1px 2px rgba(0,0,0,0.7);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: unset;
 }
 
 /* Responsive */

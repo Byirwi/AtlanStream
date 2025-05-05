@@ -19,6 +19,7 @@ require_once '../includes/session.php';
                 <?php if (isLoggedIn()): ?>
                     <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                     <li><a href="catalogue.php">Catalogue</a></li>
+                    <li><a href="compte.php">Mon compte</a></li>
                     <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
                 <?php else: ?>
                     <li><a href="login.php">Connexion</a></li>

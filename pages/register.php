@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/session.php';
-require_once '../config/database.php';
+require_once '../config/db_connect.php';
 
 $registerError = '';
 
@@ -18,14 +18,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST['email'] ?? '');
     
     // Validation des champs
-    if (empty($username) || empty($password) || empty($confirmPassword)) {
-        $registerError = "Le nom d'utilisateur et le mot de passe sont obligatoires.";
+    if (empty($username) || empty($password) || empty($confirmPassword) || empty($email)) {
+        $registerError = "Tous les champs sont obligatoires.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $registerError = "L'email n'est pas valide.";
     } elseif ($password !== $confirmPassword) {
         $registerError = "Les mots de passe ne correspondent pas.";
     } elseif (strlen($password) < 6) {
         $registerError = "Le mot de passe doit comporter au moins 6 caractères.";
-    } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $registerError = "L'email n'est pas valide.";
     } else {
         // Vérifier si le nom d'utilisateur existe déjà
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
@@ -77,7 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <nav>
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
-                <li><a href="login.php">Connexion</a></li>
+                <?php if (isLoggedIn()): ?>
+                    <li><a href="compte.php">Mon compte</a></li>
+                    <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+                <?php else: ?>
+                    <li><a href="login.php">Connexion</a></li>
+                <?php endif; ?>
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
                         <span id="theme-icon">☀️</span>
@@ -102,8 +107,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="text" id="username" name="username" required value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
                 </div>
                 <div class="form-group">
-                    <label for="email">Email (facultatif)</label>
-                    <input type="email" id="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
                 </div>
                 <div class="form-group">
                     <label for="password">Mot de passe</label>

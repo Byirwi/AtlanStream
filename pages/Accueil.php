@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/admin-auth.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -19,6 +20,17 @@ require_once '../includes/session.php';
                 <?php if (isLoggedIn()): ?>
                     <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                     <li><a href="catalogue.php">Catalogue</a></li>
+                    <li><a href="compte.php">Mon compte</a></li>
+                    <?php if (isAdmin()): ?>
+                        <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                            <ul class="admin-dropdown">
+                                <li><a href="../admin/dashboard.php">Tableau de bord</a></li>
+                                <li><a href="../admin/films.php">Gérer les films</a></li>
+                                <li><a href="../admin/categories.php">Gérer les catégories</a></li>
+                                <li><a href="../admin/users.php">Gérer les utilisateurs</a></li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
                     <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
                 <?php else: ?>
                     <li><a href="login.php">Connexion</a></li>
@@ -53,5 +65,28 @@ require_once '../includes/session.php';
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    <?php if (isAdmin()): ?>
+    <script>
+        // Script pour le menu déroulant admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminToggle = document.querySelector('.admin-dropdown-toggle');
+            const adminMenu = document.querySelector('.admin-dropdown');
+            
+            if (adminToggle) {
+                adminToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    adminMenu.classList.toggle('active');
+                });
+                
+                // Fermer le menu au clic à l'extérieur
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.admin-dropdown') && !e.target.closest('.admin-dropdown-toggle')) {
+                        adminMenu.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

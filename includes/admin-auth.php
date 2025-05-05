@@ -10,7 +10,7 @@ function isAdmin() {
 function redirectIfNotAdmin() {
     if (!isAdmin()) {
         $_SESSION['error'] = "Accès réservé aux administrateurs.";
-        header("Location: ../pages/login.php");
+        header("Location: ../login.php");
         exit;
     }
 }

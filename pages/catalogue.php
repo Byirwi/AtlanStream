@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/session.php';
 require_once '../config/db_connect.php';
+require_once '../includes/admin-auth.php';
 
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();
@@ -22,6 +23,17 @@ redirectIfNotLoggedIn();
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                <li><a href="compte.php">Mon compte</a></li>
+                <?php if (isAdmin()): ?>
+                    <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                        <ul class="admin-dropdown">
+                            <li><a href="../admin/dashboard.php">Tableau de bord</a></li>
+                            <li><a href="../admin/films.php">Gérer les films</a></li>
+                            <li><a href="../admin/categories.php">Gérer les catégories</a></li>
+                            <li><a href="../admin/users.php">Gérer les utilisateurs</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
                 <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
@@ -36,74 +48,30 @@ redirectIfNotLoggedIn();
         <div class="catalogue-header">
             <h2>Catalogue des films</h2>
             <p>Découvrez notre sélection de films sur l'Atlantide</p>
+            <?php if (isAdmin()): ?>
+                <a href="../admin/edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
+            <?php endif; ?>
         </div>
         
         <div class="movies-grid">
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=La+Cité+Perdue" alt="La Cité Perdue">
+            <?php foreach ($movies as $movie): ?>
+                <div class="movie-card">
+                    <?php if (isAdmin()): ?>
+                        <div class="admin-controls">
+                            <a href="../admin/edit-film.php?id=<?= $movie['id'] ?>" class="edit-btn" title="Modifier">✏️</a>
+                            <a href="../admin/films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
+                        </div>
+                    <?php endif; ?>
+                    <div class="movie-poster">
+                        <img src="https://via.placeholder.com/300x450?text=<?= urlencode($movie['title']) ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
+                    </div>
+                    <div class="movie-info">
+                        <h3><?= htmlspecialchars($movie['title']) ?></h3>
+                        <p><?= htmlspecialchars($movie['description']) ?></p>
+                        <span class="movie-category"><?= htmlspecialchars($movie['category']) ?></span>
+                    </div>
                 </div>
-                <div class="movie-info">
-                    <h3>La Cité Perdue</h3>
-                    <p>Un explorateur découvre les vestiges d'une civilisation sous-marine avancée.</p>
-                    <span class="movie-category">Aventure</span>
-                </div>
-            </div>
-            
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=Les+Secrets+d'Atlantis" alt="Les Secrets d'Atlantis">
-                </div>
-                <div class="movie-info">
-                    <h3>Les Secrets d'Atlantis</h3>
-                    <p>Une équipe de scientifiques révèle les mystères de la technologie atlante.</p>
-                    <span class="movie-category">Documentaire</span>
-                </div>
-            </div>
-            
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=Profondeurs+Abyssales" alt="Profondeurs Abyssales">
-                </div>
-                <div class="movie-info">
-                    <h3>Profondeurs Abyssales</h3>
-                    <p>Un sous-marin découvre une civilisation vivant toujours dans les profondeurs.</p>
-                    <span class="movie-category">Science-Fiction</span>
-                </div>
-            </div>
-            
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=L'Héritage+Atlante" alt="L'Héritage Atlante">
-                </div>
-                <div class="movie-info">
-                    <h3>L'Héritage Atlante</h3>
-                    <p>Une jeune femme découvre ses origines liées à l'ancienne civilisation.</p>
-                    <span class="movie-category">Fantastique</span>
-                </div>
-            </div>
-            
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=Légendes+Océaniques" alt="Légendes Océaniques">
-                </div>
-                <div class="movie-info">
-                    <h3>Légendes Océaniques</h3>
-                    <p>Une anthologie des mythes et légendes liés aux civilisations maritimes.</p>
-                    <span class="movie-category">Documentaire</span>
-                </div>
-            </div>
-            
-            <div class="movie-card">
-                <div class="movie-poster">
-                    <img src="https://via.placeholder.com/300x450?text=Neptune+Rising" alt="Neptune Rising">
-                </div>
-                <div class="movie-info">
-                    <h3>Neptune Rising</h3>
-                    <p>La guerre entre deux factions de descendants atlantes pour le contrôle des océans.</p>
-                    <span class="movie-category">Action</span>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </main>
     
@@ -112,5 +80,28 @@ redirectIfNotLoggedIn();
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    <?php if (isAdmin()): ?>
+    <script>
+        // Script pour le menu déroulant admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminToggle = document.querySelector('.admin-dropdown-toggle');
+            const adminMenu = document.querySelector('.admin-dropdown');
+            
+            if (adminToggle) {
+                adminToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    adminMenu.classList.toggle('active');
+                });
+                
+                // Fermer le menu au clic à l'extérieur
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.admin-dropdown') && !e.target.closest('.admin-dropdown-toggle')) {
+                        adminMenu.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

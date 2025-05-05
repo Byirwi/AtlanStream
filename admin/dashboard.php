@@ -1,5 +1,10 @@
 <?php
-// ...existing code...
+require_once '../includes/session.php';
+require_once '../config/db_connect.php';
+require_once '../includes/admin-auth.php';
+
+// Vérification des droits admin avant d'afficher la page
+redirectIfNotAdmin();
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -19,7 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $loginError = "Tous les champs sont obligatoires.";
     } else {
         // Rechercher l'utilisateur par nom d'utilisateur ou email avec une seule requête
-        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ? OR email = ?");
+        // On ajoute la récupération du champ is_admin
+        $stmt = $pdo->prepare("SELECT id, username, password, is_admin FROM users WHERE username = ? OR email = ?");
         $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch();
         
@@ -29,9 +30,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             
-            // Rediriger vers le catalogue
-            header("Location: catalogue.php");
-            exit;
+            // Si l'utilisateur est un admin, enregistrer ce statut et rediriger vers le tableau de bord admin
+            if (isset($user['is_admin']) && $user['is_admin'] == 1) {
+                $_SESSION['is_admin'] = true;
+                header("Location: ../admin/dashboard.php");
+                exit;
+            } else {
+                // Sinon, rediriger vers le catalogue normal
+                $_SESSION['is_admin'] = false;
+                header("Location: catalogue.php");
+                exit;
+            }
         } else {
             $loginError = "Identifiant ou mot de passe incorrect.";
         }

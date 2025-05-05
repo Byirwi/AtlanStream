@@ -39,6 +39,23 @@ $upload_dir = "../../public/images/";
         </nav>
     </header>
     
+    <div class="admin-menu">
+        <a href="admin_dashboard.php">Tableau de bord</a>
+        <a href="admin_films.php" class="active">Gestion des films</a>
+        <a href="admin_categories.php">Gestion des catégories</a>
+        <a href="admin_users.php">Gestion des utilisateurs</a>
+    </div>
+    
+    <!-- ...existing code... -->
+    
+    <form method="post" enctype="multipart/form-data">
+        <!-- ...existing code... -->
+        <div class="form-buttons" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary"><?= !empty($film['id']) ? 'Mettre à jour' : 'Ajouter' ?> le film</button>
+            <a href="admin_films.php" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+    
     <!-- ...existing code... -->
     
     <footer>

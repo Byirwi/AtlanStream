@@ -56,7 +56,7 @@ if (isset($_POST['add_user'])) {
             $stmt->execute([$username, $email ?: null, $hashedPassword, $is_admin]);
             
             $_SESSION['success'] = "Utilisateur créé avec succès.";
-            header("Location: users.php");
+            header("Location: admin_users.php");
             exit;
         } catch (Exception $e) {
             $errors[] = "Erreur lors de la création de l'utilisateur: " . $e->getMessage();
@@ -84,7 +84,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
             $_SESSION['error'] = "Erreur lors de la suppression de l'utilisateur.";
         }
     }
-    header("Location: users.php");
+    header("Location: admin_users.php");
     exit;
 }
 
@@ -112,7 +112,7 @@ if (isset($_GET['toggle_admin']) && is_numeric($_GET['toggle_admin'])) {
             $_SESSION['error'] = "Erreur lors de la modification des droits.";
         }
     }
-    header("Location: users.php");
+    header("Location: admin_users.php");
     exit;
 }
 
@@ -187,10 +187,10 @@ $users = $pdo->query("SELECT * FROM users ORDER BY id")->fetchAll();
         </div>
         
         <div class="admin-menu">
-            <a href="dashboard.php">Tableau de bord</a>
-            <a href="films.php">Gestion des films</a>
-            <a href="categories.php">Gestion des catégories</a>
-            <a href="users.php" class="active">Gestion des utilisateurs</a>
+            <a href="admin_dashboard.php">Tableau de bord</a>
+            <a href="admin_films.php">Gestion des films</a>
+            <a href="admin_categories.php">Gestion des catégories</a>
+            <a href="admin_users.php" class="active">Gestion des utilisateurs</a>
         </div>
         
         <?php if (isset($_SESSION['success'])): ?>
@@ -208,7 +208,7 @@ $users = $pdo->query("SELECT * FROM users ORDER BY id")->fetchAll();
         <!-- Formulaire d'ajout d'utilisateur -->
         <div class="user-form">
             <h3>Ajouter un nouvel utilisateur</h3>
-            <form action="users.php" method="POST">
+            <form action="admin_users.php" method="POST">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="username">Nom d'utilisateur*</label>
@@ -264,10 +264,10 @@ $users = $pdo->query("SELECT * FROM users ORDER BY id")->fetchAll();
                     <td><?= $user['created_at'] ?? 'N/A' ?></td>
                     <td class="actions">
                         <?php if ($user['id'] != $_SESSION['user_id']): // Ne pas afficher d'actions pour l'utilisateur actuel ?>
-                            <a href="users.php?toggle_admin=<?= $user['id'] ?>" class="edit-btn" title="Changer les droits admin" onclick="return confirm('Êtes-vous sûr de vouloir modifier les droits administrateur?')">
+                            <a href="admin_users.php?toggle_admin=<?= $user['id'] ?>" class="edit-btn" title="Changer les droits admin" onclick="return confirm('Êtes-vous sûr de vouloir modifier les droits administrateur?')">
                                 <?= $user['is_admin'] ? '⬇️ Rétrograder' : '⬆️ Promouvoir' ?>
                             </a>
-                            <a href="users.php?delete=<?= $user['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
+                            <a href="admin_users.php?delete=<?= $user['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
                                 🗑️ Supprimer
                             </a>
                         <?php else: ?>

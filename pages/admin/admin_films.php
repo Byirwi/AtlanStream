@@ -16,7 +16,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     } catch (Exception $e) {
         $_SESSION['error'] = "Erreur lors de la suppression du film.";
     }
-    header("Location: films.php");
+    header("Location: admin_films.php");
     exit;
 }
 
@@ -61,14 +61,14 @@ try {
     <div class="admin-container">
         <div class="admin-header">
             <h2>Gestion des films</h2>
-            <a href="edit-film.php" class="btn btn-primary">Ajouter un film</a>
+            <a href="admin_edit-film.php" class="btn btn-primary">Ajouter un film</a>
         </div>
         
         <div class="admin-menu">
-            <a href="dashboard.php">Tableau de bord</a>
-            <a href="films.php" class="active">Gestion des films</a>
-            <a href="categories.php">Gestion des catégories</a>
-            <a href="users.php">Gestion des utilisateurs</a>
+            <a href="admin_dashboard.php">Tableau de bord</a>
+            <a href="admin_films.php" class="active">Gestion des films</a>
+            <a href="admin_categories.php">Gestion des catégories</a>
+            <a href="admin_users.php">Gestion des utilisateurs</a>
         </div>
         
         <?php if (isset($_SESSION['success'])): ?>
@@ -108,8 +108,8 @@ try {
                     <td><?= htmlspecialchars($film['title']) ?></td>
                     <td><?= htmlspecialchars($film['category_name'] ?? 'Non catégorisé') ?></td>
                     <td class="actions">
-                        <a href="edit-film.php?id=<?= $film['id'] ?>" class="edit-btn">Modifier</a>
-                        <a href="films.php?delete=<?= $film['id'] ?>" class="delete-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">Supprimer</a>
+                        <a href="admin_edit-film.php?id=<?= $film['id'] ?>" class="edit-btn">Modifier</a>
+                        <a href="admin_films.php?delete=<?= $film['id'] ?>" class="delete-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">Supprimer</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

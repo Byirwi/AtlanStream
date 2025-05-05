@@ -24,10 +24,10 @@ require_once '../includes/admin-auth.php';
                     <?php if (isAdmin()): ?>
                         <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
                             <ul class="admin-dropdown">
-                                <li><a href="../admin/dashboard.php">Tableau de bord</a></li>
-                                <li><a href="../admin/films.php">Gérer les films</a></li>
-                                <li><a href="../admin/categories.php">Gérer les catégories</a></li>
-                                <li><a href="../admin/users.php">Gérer les utilisateurs</a></li>
+                                <li><a href="admin/dashboard.php">Tableau de bord</a></li>
+                                <li><a href="admin/films.php">Gérer les films</a></li>
+                                <li><a href="admin/categories.php">Gérer les catégories</a></li>
+                                <li><a href="admin/users.php">Gérer les utilisateurs</a></li>
                             </ul>
                         </li>
                     <?php endif; ?>

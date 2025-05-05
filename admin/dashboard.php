@@ -1,10 +1,39 @@
 <?php
+// Activer l'affichage des erreurs pour déboguer
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Inclure les fichiers nécessaires
 require_once '../includes/session.php';
 require_once '../config/db_connect.php';
 require_once '../includes/admin-auth.php';
 
-// Vérification des droits admin avant d'afficher la page
+// Tester si la session admin est correctement configurée
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    echo "<div style='color:red;padding:20px;'>";
+    echo "Erreur: Vous n'êtes pas connecté en tant qu'administrateur.<br>";
+    echo "SESSION: <pre>" . print_r($_SESSION, true) . "</pre>";
+    echo "</div>";
+    exit;
+}
+
+// Vérification des droits admin
 redirectIfNotAdmin();
+
+// Statistiques basiques
+try {
+    $stats = [
+        'films' => $pdo->query("SELECT COUNT(*) FROM movies")->fetchColumn(),
+        'categories' => $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn(),
+        'users' => $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn()
+    ];
+} catch (PDOException $e) {
+    echo "<div style='color:red;padding:20px;'>";
+    echo "Erreur de base de données: " . $e->getMessage() . "<br>";
+    echo "SESSION: <pre>" . print_r($_SESSION, true) . "</pre>";
+    echo "</div>";
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -16,6 +45,54 @@ redirectIfNotAdmin();
     <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body class="dark">
-    <!-- ...existing code... -->
+    <header>
+        <div class="logo">
+            <h1>AtlanStream <span style="color:#E53E3E">Admin</span></h1>
+        </div>
+        <nav>
+            <ul>
+                <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username'] ?? 'Inconnu'); ?></span></li>
+                <li><a href="../pages/Accueil.php">Voir le site</a></li>
+                <li><a href="../pages/logout.php" class="logout-btn">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2>Tableau de bord administrateur</h2>
+        </div>
+        
+        <div class="admin-menu">
+            <a href="dashboard.php" class="active">Tableau de bord</a>
+            <a href="films.php">Gestion des films</a>
+            <a href="categories.php">Gestion des catégories</a>
+            <a href="users.php">Gestion des utilisateurs</a>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><?php echo $stats['films']; ?></div>
+                <div class="stat-label">Films</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?php echo $stats['categories']; ?></div>
+                <div class="stat-label">Catégories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><?php echo $stats['users']; ?></div>
+                <div class="stat-label">Utilisateurs</div>
+            </div>
+        </div>
+        
+        <div class="admin-actions">
+            <h3>Actions rapides</h3>
+            <p><a href="edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a></p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 AtlanStream - Administration</p>
+    </footer>
 </body>
 </html>

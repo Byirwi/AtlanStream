@@ -48,14 +48,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Hasher le mot de passe
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             
-            // Insérer le nouvel utilisateur
-            $stmt = $pdo->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-            if ($stmt->execute([$username, $hashedPassword, $email ?: null])) {
-                $_SESSION['success'] = "Compte créé avec succès ! Vous pouvez maintenant vous connecter.";
+            try {
+                // Insertion de l'utilisateur avec is_admin = 0 (non admin)
+                $stmt = $pdo->prepare("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, 0)");
+                $stmt->execute([$username, $email ?: null, $hashedPassword]);
+                
+                // Créer un message de succès et rediriger vers la page de connexion
+                $_SESSION['success'] = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
                 header("Location: login.php");
                 exit;
-            } else {
+            } catch (Exception $e) {
                 $registerError = "Une erreur est survenue lors de l'inscription.";
+                // Si en développement, afficher plus de détails
+                if (!strpos($_SERVER['HTTP_HOST'] ?? '', 'ldpa-tech.fr')) {
+                    $registerError .= " Détail: " . $e->getMessage();
+                }
             }
         }
     }

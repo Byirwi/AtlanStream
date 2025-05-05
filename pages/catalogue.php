@@ -61,10 +61,10 @@ if (empty($movies)) {
                 <?php if (isAdmin()): ?>
                     <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
                         <ul class="admin-dropdown">
-                            <li><a href="../admin/dashboard.php">Tableau de bord</a></li>
-                            <li><a href="../admin/films.php">Gérer les films</a></li>
-                            <li><a href="../admin/categories.php">Gérer les catégories</a></li>
-                            <li><a href="../admin/users.php">Gérer les utilisateurs</a></li>
+                            <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
+                            <li><a href="admin/admin_films.php">Gérer les films</a></li>
+                            <li><a href="admin/admin_categories.php">Gérer les catégories</a></li>
+                            <li><a href="admin/admin_users.php">Gérer les utilisateurs</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
@@ -83,7 +83,7 @@ if (empty($movies)) {
             <h2>Catalogue des films</h2>
             <p>Découvrez notre sélection de films sur l'Atlantide</p>
             <?php if (isAdmin()): ?>
-                <a href="../admin/edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
+                <a href="admin/admin_edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
             <?php endif; ?>
         </div>
         
@@ -92,8 +92,8 @@ if (empty($movies)) {
                 <div class="movie-card">
                     <?php if (isAdmin()): ?>
                         <div class="admin-controls">
-                            <a href="../admin/edit-film.php?id=<?= $movie['id'] ?>" class="edit-btn" title="Modifier">✏️</a>
-                            <a href="../admin/films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
+                            <a href="admin/admin_edit-film.php?id=<?= $movie['id'] ?>" class="edit-btn" title="Modifier">✏️</a>
+                            <a href="admin/admin_films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
                         </div>
                     <?php endif; ?>
                     <div class="movie-poster">

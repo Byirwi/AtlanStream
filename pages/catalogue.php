@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/session.php';
-require_once '../config/db_connect.php';
+require_once '../config/database.php';
 
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();
@@ -22,7 +22,6 @@ redirectIfNotLoggedIn();
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                <li><a href="compte.php">Mon compte</a></li>
                 <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
@@ -40,38 +39,71 @@ redirectIfNotLoggedIn();
         </div>
         
         <div class="movies-grid">
-            <?php
-            // Récupérer les films depuis la base de données (limité à 30)
-            try {
-                $stmt = $pdo->query("SELECT movies.*, categories.name as category_name FROM movies 
-                                    LEFT JOIN categories ON movies.category_id = categories.id 
-                                    LIMIT 30");
-                $movies = $stmt->fetchAll();
-            } catch (Exception $e) {
-                $movies = [];
-            }
-            ?>
-            <?php if (empty($movies)): ?>
-                <p style="color:var(--light-text);text-align:center;">Aucun film trouvé.</p>
-            <?php else: ?>
-                <?php foreach ($movies as $movie): ?>
-                <a href="film.php?id=<?= urlencode($movie['id']) ?>" class="movie-card" style="text-decoration:none;">
-                    <div class="movie-poster">
-                        <?php
-                        $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../public/images/' . $movie['poster_url'])
-                            ? '../public/images/' . htmlspecialchars($movie['poster_url'])
-                            : '../public/images/default.jpg';
-                        ?>
-                        <img src="<?= $poster ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
-                    </div>
-                    <div class="movie-info">
-                        <h3><?= htmlspecialchars($movie['title']) ?></h3>
-                        <p><?= htmlspecialchars($movie['description']) ?></p>
-                        <span class="movie-category"><?= htmlspecialchars($movie['category_name'] ?? 'Non catégorisé') ?></span>
-                    </div>
-                </a>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=La+Cité+Perdue" alt="La Cité Perdue">
+                </div>
+                <div class="movie-info">
+                    <h3>La Cité Perdue</h3>
+                    <p>Un explorateur découvre les vestiges d'une civilisation sous-marine avancée.</p>
+                    <span class="movie-category">Aventure</span>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=Les+Secrets+d'Atlantis" alt="Les Secrets d'Atlantis">
+                </div>
+                <div class="movie-info">
+                    <h3>Les Secrets d'Atlantis</h3>
+                    <p>Une équipe de scientifiques révèle les mystères de la technologie atlante.</p>
+                    <span class="movie-category">Documentaire</span>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=Profondeurs+Abyssales" alt="Profondeurs Abyssales">
+                </div>
+                <div class="movie-info">
+                    <h3>Profondeurs Abyssales</h3>
+                    <p>Un sous-marin découvre une civilisation vivant toujours dans les profondeurs.</p>
+                    <span class="movie-category">Science-Fiction</span>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=L'Héritage+Atlante" alt="L'Héritage Atlante">
+                </div>
+                <div class="movie-info">
+                    <h3>L'Héritage Atlante</h3>
+                    <p>Une jeune femme découvre ses origines liées à l'ancienne civilisation.</p>
+                    <span class="movie-category">Fantastique</span>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=Légendes+Océaniques" alt="Légendes Océaniques">
+                </div>
+                <div class="movie-info">
+                    <h3>Légendes Océaniques</h3>
+                    <p>Une anthologie des mythes et légendes liés aux civilisations maritimes.</p>
+                    <span class="movie-category">Documentaire</span>
+                </div>
+            </div>
+            
+            <div class="movie-card">
+                <div class="movie-poster">
+                    <img src="https://via.placeholder.com/300x450?text=Neptune+Rising" alt="Neptune Rising">
+                </div>
+                <div class="movie-info">
+                    <h3>Neptune Rising</h3>
+                    <p>La guerre entre deux factions de descendants atlantes pour le contrôle des océans.</p>
+                    <span class="movie-category">Action</span>
+                </div>
+            </div>
         </div>
     </main>
     

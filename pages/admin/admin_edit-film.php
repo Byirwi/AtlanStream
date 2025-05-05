@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $category_id = isset($_POST['category_id']) && $_POST['category_id'] !== '' ? (int)$_POST['category_id'] : null;
+    // On garde ces valeurs pour l'interface mais elles ne seront pas utilisées dans la BDD pour l'instant
     $year = isset($_POST['year']) ? (int)$_POST['year'] : date('Y');
     $duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 0;
     
@@ -81,14 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (empty($error)) {
-            // Mise à jour ou ajout du film
+            // Mise à jour ou ajout du film (sans year et duration qui n'existent pas dans la BDD)
             if (!empty($film['id'])) {
-                $stmt = $pdo->prepare("UPDATE movies SET title = ?, description = ?, category_id = ?, poster_url = ?, year = ?, duration = ? WHERE id = ?");
-                $stmt->execute([$title, $description, $category_id, $poster_url, $year, $duration, $film['id']]);
+                $stmt = $pdo->prepare("UPDATE movies SET title = ?, description = ?, category_id = ?, poster_url = ? WHERE id = ?");
+                $stmt->execute([$title, $description, $category_id, $poster_url, $film['id']]);
                 $success = "Film mis à jour avec succès.";
             } else {
-                $stmt = $pdo->prepare("INSERT INTO movies (title, description, category_id, poster_url, year, duration) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$title, $description, $category_id, $poster_url, $year, $duration]);
+                $stmt = $pdo->prepare("INSERT INTO movies (title, description, category_id, poster_url) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$title, $description, $category_id, $poster_url]);
                 $success = "Film ajouté avec succès.";
             }
             

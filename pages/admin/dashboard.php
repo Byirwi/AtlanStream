@@ -3,10 +3,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Inclure les fichiers nécessaires
-require_once '../includes/session.php';
-require_once '../config/db_connect.php';
-require_once '../includes/admin-auth.php';
+// Inclure les fichiers nécessaires - chemins corrigés car nous sommes dans pages/admin
+require_once '../../includes/session.php';
+require_once '../../config/db_connect.php';
+require_once '../../includes/admin-auth.php';
 
 // Tester si la session admin est correctement configurée
 if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
@@ -41,8 +41,8 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord - AtlanStream Admin</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
 </head>
 <body class="dark">
     <header>
@@ -52,8 +52,13 @@ try {
         <nav>
             <ul>
                 <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username'] ?? 'Inconnu'); ?></span></li>
-                <li><a href="../pages/Accueil.php">Voir le site</a></li>
-                <li><a href="../pages/logout.php" class="logout-btn">Déconnexion</a></li>
+                <li><a href="../Accueil.php">Voir le site</a></li>
+                <li><a href="../logout.php" class="logout-btn">Déconnexion</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
+                        <span id="theme-icon">☀️</span>
+                    </button>
+                </li>
             </ul>
         </nav>
     </header>
@@ -94,5 +99,7 @@ try {
     <footer>
         <p>&copy; 2025 AtlanStream - Administration</p>
     </footer>
+    
+    <script src="../../assets/js/theme.js"></script>
 </body>
 </html>

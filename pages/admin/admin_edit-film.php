@@ -3,11 +3,16 @@ require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/admin-auth.php';
 
+// Activer l'affichage des erreurs pour le débogage
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 // Vérification des droits admin
 redirectIfNotAdmin();
 
 $error = '';
 $success = '';
+$debug_info = []; // Pour stocker les informations de débogage
 $film = [
     'id' => '',
     'title' => '',
@@ -15,7 +20,9 @@ $film = [
     'poster_url' => '',
     'category_id' => '',
     'year' => date('Y'),
-    'duration' => 0
+    'duration' => 0,
+    'director' => '',
+    'actors' => ''
 ];
 
 // Récupérer les catégories associées si on modifie un film existant
@@ -31,10 +38,21 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     if ($found_film) {
         $film = $found_film;
         
-        // Récupérer les catégories actuelles du film
-        $stmtCategories = $pdo->prepare("SELECT category_id FROM movie_categories WHERE movie_id = ?");
-        $stmtCategories->execute([$id]);
-        $selectedCategories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN, 0);
+        // Récupérer les catégories actuelles du film - Version plus robuste
+        try {
+            $stmtCategories = $pdo->prepare("SELECT category_id FROM movie_categories WHERE movie_id = ?");
+            $stmtCategories->execute([$id]);
+            
+            // Récupérer les IDs de catégorie comme un tableau simple
+            $selectedCategories = [];
+            while ($row = $stmtCategories->fetch(PDO::FETCH_ASSOC)) {
+                $selectedCategories[] = (int)$row['category_id']; // Conversion explicite en entier
+            }
+            
+            $debug_info['selected_categories'] = $selectedCategories;
+        } catch (Exception $e) {
+            $error = "Erreur lors de la récupération des catégories: " . $e->getMessage();
+        }
     } else {
         $_SESSION['error'] = "Film introuvable.";
         header("Location: admin_films.php");
@@ -51,6 +69,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 0;
     $director = trim($_POST['director'] ?? '');
     $actors = trim($_POST['actors'] ?? '');
+    
+    // Débogage des données de formulaire
+    $debug_info['post_data'] = [
+        'title' => $title,
+        'categories' => $categories,
+        'year' => $year,
+        'duration' => $duration
+    ];
+    
+    // Conversion explicite des IDs de catégorie en entiers
+    $categories = array_map('intval', $categories);
     
     if (empty($title)) {
         $error = "Le titre est obligatoire.";
@@ -112,20 +141,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtDelete = $pdo->prepare("DELETE FROM movie_categories WHERE movie_id = ?");
                 $stmtDelete->execute([$movieId]);
                 
-                // Ajouter les nouvelles relations de catégories
+                // Ajouter les nouvelles relations de catégories - Méthode améliorée
                 if (!empty($categories)) {
-                    $insertValues = [];
-                    $insertPlaceholders = [];
-                    
+                    // Méthode alternative avec des requêtes individuelles (plus robuste)
                     foreach ($categories as $categoryId) {
-                        $insertValues[] = $movieId;
-                        $insertValues[] = $categoryId;
-                        $insertPlaceholders[] = "(?, ?)";
+                        $stmtInsert = $pdo->prepare("INSERT INTO movie_categories (movie_id, category_id) VALUES (?, ?)");
+                        $stmtInsert->execute([$movieId, $categoryId]);
                     }
-                    
-                    $placeholders = implode(', ', $insertPlaceholders);
-                    $stmtInsert = $pdo->prepare("INSERT INTO movie_categories (movie_id, category_id) VALUES " . $placeholders);
-                    $stmtInsert->execute($insertValues);
                 }
                 
                 // Valider la transaction
@@ -134,10 +156,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['success'] = $success;
                 header("Location: admin_films.php");
                 exit;
+                
             } catch (Exception $e) {
                 // Annuler la transaction en cas d'erreur
                 $pdo->rollBack();
                 $error = "Erreur lors de l'enregistrement du film: " . $e->getMessage();
+                $debug_info['error'] = $e->getMessage();
+                $debug_info['trace'] = $e->getTraceAsString();
             }
         }
     }
@@ -242,6 +267,17 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
         .checkbox-item input[type="checkbox"] {
             margin-right: 8px;
         }
+        .debug-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            color: #333;
+            font-family: monospace;
+            white-space: pre-wrap;
+            display: none;
+        }
     </style>
 </head>
 <body class="dark">
@@ -283,6 +319,14 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
             <div class="alert alert-success"><?= $success ?></div>
         <?php endif; ?>
         
+        <!-- Information sur les catégories sélectionnées (pour débogage) -->
+        <?php if (!empty($debug_info)): ?>
+            <div class="debug-info">
+                <h4>Informations de débogage:</h4>
+                <pre><?php print_r($debug_info); ?></pre>
+            </div>
+        <?php endif; ?>
+        
         <div class="form-container">
             <form method="post" enctype="multipart/form-data">
                 <div class="form-section">
@@ -308,12 +352,24 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
                 <div class="form-section">
                     <h3>Catégories</h3>
                     <p>Sélectionnez une ou plusieurs catégories pour ce film (facultatif):</p>
+                    
+                    <!-- Afficher les valeurs actuellement sélectionnées pour le débogage -->
+                    <p style="font-size: 0.9em; color: #6c757d;">
+                        Catégories sélectionnées: 
+                        <?= !empty($selectedCategories) ? implode(', ', $selectedCategories) : 'Aucune' ?>
+                    </p>
+                    
                     <div class="checkbox-grid">
                         <?php foreach ($categories as $category): ?>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="category_<?= $category['id'] ?>" name="categories[]" value="<?= $category['id'] ?>" 
-                                    <?= in_array($category['id'], $selectedCategories) ? 'checked' : '' ?>>
-                                <label for="category_<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></label>
+                                <input type="checkbox" 
+                                       id="category_<?= $category['id'] ?>" 
+                                       name="categories[]" 
+                                       value="<?= $category['id'] ?>" 
+                                       <?= in_array((int)$category['id'], $selectedCategories) ? 'checked' : '' ?>>
+                                <label for="category_<?= $category['id'] ?>">
+                                    <?= htmlspecialchars($category['name']) ?>
+                                </label>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -393,6 +449,28 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
                 fileName.textContent = 'Aucun fichier sélectionné';
             }
         }
+
+        // Activer/désactiver l'affichage des informations de débogage
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugInfo = document.querySelector('.debug-info');
+            if (debugInfo) {
+                const toggle = document.createElement('button');
+                toggle.textContent = 'Afficher les infos de débogage';
+                toggle.classList.add('btn', 'btn-secondary');
+                toggle.style.marginBottom = '15px';
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (debugInfo.style.display === 'none' || !debugInfo.style.display) {
+                        debugInfo.style.display = 'block';
+                        toggle.textContent = 'Masquer les infos de débogage';
+                    } else {
+                        debugInfo.style.display = 'none';
+                        toggle.textContent = 'Afficher les infos de débogage';
+                    }
+                });
+                debugInfo.parentNode.insertBefore(toggle, debugInfo);
+            }
+        });
     </script>
 </body>
 </html>

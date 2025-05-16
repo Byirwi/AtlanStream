@@ -10,21 +10,48 @@ redirectIfNotAdmin();
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $id = $_GET['delete'];
     try {
+        // Démarrer une transaction
+        $pdo->beginTransaction();
+        
+        // Supprimer d'abord les relations avec les catégories
+        $stmt = $pdo->prepare("DELETE FROM movie_categories WHERE movie_id = ?");
+        $stmt->execute([$id]);
+        
+        // Ensuite supprimer le film
         $stmt = $pdo->prepare("DELETE FROM movies WHERE id = ?");
         $stmt->execute([$id]);
+        
+        // Valider la transaction
+        $pdo->commit();
+        
         $_SESSION['success'] = "Film supprimé avec succès.";
     } catch (Exception $e) {
-        $_SESSION['error'] = "Erreur lors de la suppression du film.";
+        // Annuler la transaction en cas d'erreur
+        $pdo->rollBack();
+        $_SESSION['error'] = "Erreur lors de la suppression du film: " . $e->getMessage();
     }
     header("Location: admin_films.php");
     exit;
 }
 
-// Récupérer tous les films
+// Récupérer tous les films avec leurs catégories
 try {
-    $films = $pdo->query("SELECT movies.*, categories.name as category_name FROM movies 
-                      LEFT JOIN categories ON movies.category_id = categories.id 
-                      ORDER BY movies.id DESC")->fetchAll();
+    // Récupérer les films de base
+    $films = $pdo->query("SELECT movies.* FROM movies ORDER BY movies.id DESC")->fetchAll();
+    
+    // Pour chaque film, récupérer les catégories associées
+    foreach ($films as &$film) {
+        $stmt = $pdo->prepare("
+            SELECT c.name 
+            FROM categories c
+            JOIN movie_categories mc ON c.id = mc.category_id
+            WHERE mc.movie_id = ?
+            ORDER BY c.name
+        ");
+        $stmt->execute([$film['id']]);
+        $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $film['categories'] = $categories;
+    }
 } catch (Exception $e) {
     $films = [];
     $_SESSION['error'] = "Erreur lors de la récupération des films: " . $e->getMessage();
@@ -38,6 +65,22 @@ try {
     <title>Gestion des films - AtlanStream Admin</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <style>
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 5px;
+        }
+        .category-tag {
+            background-color: var(--accent-color-soft);
+            color: var(--primary-color);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body class="dark">
     <header>
@@ -89,7 +132,8 @@ try {
                     <th>ID</th>
                     <th>Poster</th>
                     <th>Titre</th>
-                    <th>Catégorie</th>
+                    <th>Catégories</th>
+                    <th>Année</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -106,7 +150,18 @@ try {
                         <img src="<?= $poster ?>" alt="<?= htmlspecialchars($film['title']) ?>" style="width:50px;height:70px;object-fit:cover;border-radius:4px;">
                     </td>
                     <td><?= htmlspecialchars($film['title']) ?></td>
-                    <td><?= htmlspecialchars($film['category_name'] ?? 'Non catégorisé') ?></td>
+                    <td>
+                        <?php if (!empty($film['categories'])): ?>
+                            <div class="category-tags">
+                                <?php foreach ($film['categories'] as $category): ?>
+                                    <span class="category-tag"><?= htmlspecialchars($category) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <span class="text-muted">Non catégorisé</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= $film['year'] ?? 'N/A' ?></td>
                     <td class="actions">
                         <a href="admin_edit-film.php?id=<?= $film['id'] ?>" class="edit-btn">Modifier</a>
                         <a href="admin_films.php?delete=<?= $film['id'] ?>" class="delete-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">Supprimer</a>
@@ -115,7 +170,7 @@ try {
                 <?php endforeach; ?>
                 <?php if (empty($films)): ?>
                 <tr>
-                    <td colspan="5" style="text-align:center">Aucun film trouvé.</td>
+                    <td colspan="6" style="text-align:center">Aucun film trouvé.</td>
                 </tr>
                 <?php endif; ?>
             </tbody>

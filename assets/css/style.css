@@ -60,9 +60,9 @@
     --card-bg: #FFFFFF;
     --card-hover-bg: var(--soft-aqua-light);
     
-    --light-text: #2D3748;
-    --gray-text: #4A5568;
-    --muted-text: #718096;
+    --light-text: #1A202C;       /* Texte plus foncé pour meilleur contraste */
+    --gray-text: #2D3748;        /* Texte gris plus foncé */
+    --muted-text: #4A5568;       /* Texte discret plus foncé */
     
     --input-bg: #FFFFFF;
     --input-border: #E2E8F0;
@@ -74,7 +74,7 @@
     
     --gradient-bg: linear-gradient(135deg, #F7FAFC 0%, var(--soft-aqua-light) 100%);
     --gradient-card: linear-gradient(135deg, #FFFFFF 0%, var(--soft-blue-light) 100%);
-    --gradient-button: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    --gradient-button: linear-gradient(135deg, #38B2AC 0%, #2B6CB0 100%);
 }
 
 * {
@@ -499,15 +499,11 @@ footer {
 
 /* Style du nom d'utilisateur en thème clair */
 .light .welcome-user {
-    background: var(--gradient-button);
-    -webkit-background-clip: text;
-    -moz-background-clip: text;
-    -ms-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -moz-text-fill-color: transparent;
-    color: transparent; /* Fallback pour les navigateurs qui ne supportent pas -webkit-text-fill-color */
-    border: 1px solid rgba(79, 209, 197, 0.2);
+    color: #2C5282;               /* Afficher en couleur unie au lieu du gradient */
+    background-color: rgba(79, 209, 197, 0.2);
+    border: 1px solid rgba(79, 209, 197, 0.4);
+    font-weight: 600;
+    text-shadow: none;            /* Enlever les ombres */
 }
 
 /* Style du nom d'utilisateur en thème sombre - plus lisible */
@@ -647,6 +643,8 @@ footer {
 
 .light .catalogue-header {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    background: linear-gradient(to right, rgba(79, 209, 197, 0.2), rgba(99, 179, 237, 0.1));
+    border-bottom: 1px solid rgba(79, 209, 197, 0.3);
 }
 
 .light .catalogue-header h2 {
@@ -659,6 +657,56 @@ footer {
     -moz-text-fill-color: transparent;
     color: transparent; /* Fallback pour les navigateurs qui ne supportent pas -webkit-text-fill-color */
     display: inline-block;
+    color: #2C5282;              /* Bleu plus foncé pour les titres */
+    text-shadow: none;           /* Enlever l'ombre qui peut réduire la lisibilité */
+    font-weight: 700;            /* Police plus grasse pour plus de contraste */
+}
+
+.light .catalogue-header p {
+    color: #2D3748;              /* Texte plus foncé */
+    font-weight: 500;            /* Semi-gras pour meilleure lisibilité */
+}
+
+.light .movie-info h3 {
+    color: #2C5282;              /* Bleu plus foncé pour les titres */
+    font-weight: 600;            /* Rendre le titre plus visible */
+}
+
+.light .movie-info p {
+    color: #4A5568;              /* Gris plus foncé pour le texte descriptif */
+    line-height: 1.6;            /* Augmenter légèrement l'interligne */
+}
+
+.light .movie-category {
+    background-color: rgba(79, 209, 197, 0.2);    /* Fond plus opaque */
+    color: #2C5282;                               /* Texte bleu plus foncé */
+    font-weight: 600;                             /* Semi-gras */
+    border: 1px solid rgba(79, 209, 197, 0.4);    /* Bordure plus visible */
+}
+
+.light .movie-card:hover .movie-category {
+    background: #38B2AC;          /* Couleur de fond plus foncée */
+    color: white;                 /* Texte blanc pour contraste */
+    border-color: #38B2AC;        /* Bordure assortie */
+}
+
+.light .login-form h2,
+.light .register-form h2 {
+    color: #2C5282;               /* Bleu plus foncé pour les titres */
+}
+
+.light .form-group label {
+    color: #2D3748;               /* Plus foncé pour meilleur contraste */
+    font-weight: 500;             /* Semi-gras */
+}
+
+.light .form-footer {
+    color: #4A5568;               /* Texte plus foncé */
+}
+
+.light .form-footer a {
+    color: #2C5282;               /* Lien bleu plus foncé */
+    text-decoration: underline;   /* Soulignement pour mieux identifier les liens */
 }
 
 .light .theme-toggle {

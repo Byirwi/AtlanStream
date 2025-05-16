@@ -8,10 +8,23 @@ redirectIfNotLoggedIn();
 
 // Récupérer les films depuis la base de données
 try {
-    $stmt = $pdo->query("SELECT movies.*, categories.name as category_name FROM movies 
-                         LEFT JOIN categories ON movies.category_id = categories.id 
-                         LIMIT 30");
+    // Récupérer les films de base
+    $stmt = $pdo->query("SELECT * FROM movies LIMIT 30");
     $movies = $stmt->fetchAll();
+    
+    // Pour chaque film, récupérer les catégories associées
+    foreach ($movies as &$movie) {
+        $stmt = $pdo->prepare("
+            SELECT c.name 
+            FROM categories c
+            JOIN movie_categories mc ON c.id = mc.category_id
+            WHERE mc.movie_id = ?
+            ORDER BY c.name
+        ");
+        $stmt->execute([$movie['id']]);
+        $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $movie['categories'] = $categories;
+    }
 } catch (Exception $e) {
     // En cas d'erreur, initialiser $movies comme un tableau vide
     $movies = [];
@@ -27,14 +40,14 @@ if (empty($movies)) {
             'title' => 'La Cité Perdue',
             'description' => 'Un explorateur découvre les vestiges d\'une civilisation sous-marine avancée.',
             'poster_url' => 'default.jpg',
-            'category_name' => 'Aventure'
+            'categories' => ['Aventure', 'Science-Fiction']
         ],
         [
             'id' => 2,
             'title' => 'Les Secrets d\'Atlantis',
             'description' => 'Une équipe de scientifiques révèle les mystères de la technologie atlante.',
             'poster_url' => 'default.jpg',
-            'category_name' => 'Documentaire'
+            'categories' => ['Documentaire']
         ],
         // Ajoutez d'autres films statiques si nécessaire
     ];
@@ -47,6 +60,17 @@ if (empty($movies)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtlanStream - Catalogue</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .movie-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 15px;
+        }
+        .movie-category {
+            margin: 0;
+        }
+    </style>
 </head>
 <body class="dark">
     <header>
@@ -106,8 +130,19 @@ if (empty($movies)) {
                     </div>
                     <div class="movie-info">
                         <h3><?= htmlspecialchars($movie['title']) ?></h3>
+                        <?php if (!empty($movie['year'])): ?>
+                            <div class="movie-year"><?= htmlspecialchars($movie['year']) ?></div>
+                        <?php endif; ?>
                         <p><?= htmlspecialchars($movie['description']) ?></p>
-                        <span class="movie-category"><?= htmlspecialchars($movie['category_name'] ?? 'Non catégorisé') ?></span>
+                        <?php if (!empty($movie['categories'])): ?>
+                            <div class="movie-categories">
+                                <?php foreach ($movie['categories'] as $category): ?>
+                                    <span class="movie-category"><?= htmlspecialchars($category) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <span class="movie-category">Non catégorisé</span>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>

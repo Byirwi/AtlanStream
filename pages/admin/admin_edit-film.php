@@ -18,6 +18,9 @@ $film = [
     'duration' => 0
 ];
 
+// Récupérer les catégories associées si on modifie un film existant
+$selectedCategories = [];
+
 // Si on modifie un film existant
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = $_GET['id'];
@@ -27,6 +30,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     
     if ($found_film) {
         $film = $found_film;
+        
+        // Récupérer les catégories actuelles du film
+        $stmtCategories = $pdo->prepare("SELECT category_id FROM movie_categories WHERE movie_id = ?");
+        $stmtCategories->execute([$id]);
+        $selectedCategories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN, 0);
     } else {
         $_SESSION['error'] = "Film introuvable.";
         header("Location: admin_films.php");
@@ -38,10 +46,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $category_id = isset($_POST['category_id']) && $_POST['category_id'] !== '' ? (int)$_POST['category_id'] : null;
-    // On garde ces valeurs pour l'interface mais elles ne seront pas utilisées dans la BDD pour l'instant
+    $categories = isset($_POST['categories']) ? $_POST['categories'] : [];
     $year = isset($_POST['year']) ? (int)$_POST['year'] : date('Y');
     $duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 0;
+    $director = trim($_POST['director'] ?? '');
+    $actors = trim($_POST['actors'] ?? '');
     
     if (empty($title)) {
         $error = "Le titre est obligatoire.";
@@ -82,21 +91,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (empty($error)) {
-            // Mise à jour ou ajout du film (sans year et duration qui n'existent pas dans la BDD)
-            if (!empty($film['id'])) {
-                $stmt = $pdo->prepare("UPDATE movies SET title = ?, description = ?, category_id = ?, poster_url = ? WHERE id = ?");
-                $stmt->execute([$title, $description, $category_id, $poster_url, $film['id']]);
-                $success = "Film mis à jour avec succès.";
-            } else {
-                $stmt = $pdo->prepare("INSERT INTO movies (title, description, category_id, poster_url) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$title, $description, $category_id, $poster_url]);
-                $success = "Film ajouté avec succès.";
-            }
-            
-            if (empty($error)) {
+            try {
+                // Démarrer une transaction
+                $pdo->beginTransaction();
+                
+                // Mise à jour ou ajout du film (avec les nouveaux champs director et actors)
+                if (!empty($film['id'])) {
+                    $stmt = $pdo->prepare("UPDATE movies SET title = ?, description = ?, poster_url = ?, year = ?, duration = ?, director = ?, actors = ? WHERE id = ?");
+                    $stmt->execute([$title, $description, $poster_url, $year, $duration, $director, $actors, $film['id']]);
+                    $movieId = $film['id'];
+                    $success = "Film mis à jour avec succès.";
+                } else {
+                    $stmt = $pdo->prepare("INSERT INTO movies (title, description, poster_url, year, duration, director, actors) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$title, $description, $poster_url, $year, $duration, $director, $actors]);
+                    $movieId = $pdo->lastInsertId();
+                    $success = "Film ajouté avec succès.";
+                }
+                
+                // Supprimer les anciennes relations de catégories
+                $stmtDelete = $pdo->prepare("DELETE FROM movie_categories WHERE movie_id = ?");
+                $stmtDelete->execute([$movieId]);
+                
+                // Ajouter les nouvelles relations de catégories
+                if (!empty($categories)) {
+                    $insertValues = [];
+                    $insertPlaceholders = [];
+                    
+                    foreach ($categories as $categoryId) {
+                        $insertValues[] = $movieId;
+                        $insertValues[] = $categoryId;
+                        $insertPlaceholders[] = "(?, ?)";
+                    }
+                    
+                    $placeholders = implode(', ', $insertPlaceholders);
+                    $stmtInsert = $pdo->prepare("INSERT INTO movie_categories (movie_id, category_id) VALUES " . $placeholders);
+                    $stmtInsert->execute($insertValues);
+                }
+                
+                // Valider la transaction
+                $pdo->commit();
+                
                 $_SESSION['success'] = $success;
                 header("Location: admin_films.php");
                 exit;
+            } catch (Exception $e) {
+                // Annuler la transaction en cas d'erreur
+                $pdo->rollBack();
+                $error = "Erreur lors de l'enregistrement du film: " . $e->getMessage();
             }
         }
     }
@@ -104,9 +145,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // En cas d'erreur, on conserve les valeurs saisies
     $film['title'] = $title;
     $film['description'] = $description;
-    $film['category_id'] = $category_id;
     $film['year'] = $year;
     $film['duration'] = $duration;
+    $film['director'] = $director;
+    $film['actors'] = $actors;
+    $selectedCategories = $categories;
 }
 
 // Récupérer les catégories
@@ -167,6 +210,38 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
         .form-row .form-group {
             flex: 1;
         }
+        .categories-select {
+            height: 150px;
+            overflow-y: auto;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--input-border);
+            padding-bottom: 20px;
+        }
+        .form-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .checkbox-item:hover {
+            background-color: var(--card-hover-bg);
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body class="dark">
@@ -210,55 +285,77 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
         
         <div class="form-container">
             <form method="post" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="title">Titre du film *</label>
-                    <input type="text" id="title" name="title" value="<?= htmlspecialchars($film['title']) ?>" required>
-                </div>
-                
-                <div class="form-row">
+                <div class="form-section">
+                    <h3>Informations générales</h3>
                     <div class="form-group">
-                        <label for="category_id">Catégorie</label>
-                        <select id="category_id" name="category_id">
-                            <option value="">-- Sélectionner une catégorie --</option>
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?= $category['id'] ?>" <?= $film['category_id'] == $category['id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($category['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label for="title">Titre du film *</label>
+                        <input type="text" id="title" name="title" value="<?= htmlspecialchars($film['title']) ?>" required>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="year">Année de sortie</label>
-                        <input type="number" id="year" name="year" min="1900" max="<?= date('Y') + 5 ?>" value="<?= $film['year'] ?? date('Y') ?>">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="duration">Durée (minutes)</label>
-                        <input type="number" id="duration" name="duration" min="0" value="<?= $film['duration'] ?? 0 ?>">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Année de sortie</label>
+                            <input type="number" id="year" name="year" min="1900" max="<?= date('Y') + 5 ?>" value="<?= $film['year'] ?? date('Y') ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duration">Durée (minutes)</label>
+                            <input type="number" id="duration" name="duration" min="0" value="<?= $film['duration'] ?? 0 ?>">
+                        </div>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="description">Synopsis</label>
-                    <textarea id="description" name="description" rows="6"><?= htmlspecialchars($film['description']) ?></textarea>
+                <div class="form-section">
+                    <h3>Catégories</h3>
+                    <p>Sélectionnez une ou plusieurs catégories pour ce film (facultatif):</p>
+                    <div class="checkbox-grid">
+                        <?php foreach ($categories as $category): ?>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="category_<?= $category['id'] ?>" name="categories[]" value="<?= $category['id'] ?>" 
+                                    <?= in_array($category['id'], $selectedCategories) ? 'checked' : '' ?>>
+                                <label for="category_<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Poster du film</label>
-                    <div class="file-input-wrapper">
-                        <div class="file-input-button">Choisir une image</div>
-                        <input type="file" id="poster" name="poster" accept="image/*" onchange="updateFileName(this)">
+                <div class="form-section">
+                    <h3>Réalisation</h3>
+                    <div class="form-group">
+                        <label for="director">Réalisateur</label>
+                        <input type="text" id="director" name="director" value="<?= htmlspecialchars($film['director'] ?? '') ?>">
                     </div>
-                    <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
                     
-                    <div class="preview-container">
-                        <?php if (!empty($film['poster_url'])): ?>
-                            <p>Poster actuel :</p>
-                            <img src="<?= '../../public/images/' . htmlspecialchars($film['poster_url']) ?>" alt="Poster actuel" class="poster-preview" id="preview">
-                        <?php else: ?>
-                            <img src="../../public/images/default.jpg" alt="Poster par défaut" class="poster-preview" id="preview">
-                        <?php endif; ?>
+                    <div class="form-group">
+                        <label for="actors">Acteurs principaux</label>
+                        <input type="text" id="actors" name="actors" value="<?= htmlspecialchars($film['actors'] ?? '') ?>" placeholder="Séparés par des virgules">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Synopsis</h3>
+                    <div class="form-group">
+                        <textarea id="description" name="description" rows="6"><?= htmlspecialchars($film['description']) ?></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Affiche du film</h3>
+                    <div class="form-group">
+                        <div class="file-input-wrapper">
+                            <div class="file-input-button">Choisir une image</div>
+                            <input type="file" id="poster" name="poster" accept="image/*" onchange="updateFileName(this)">
+                        </div>
+                        <span class="file-name" id="fileName">Aucun fichier sélectionné</span>
+                        
+                        <div class="preview-container">
+                            <?php if (!empty($film['poster_url'])): ?>
+                                <p>Poster actuel :</p>
+                                <img src="<?= '../../public/images/' . htmlspecialchars($film['poster_url']) ?>" alt="Poster actuel" class="poster-preview" id="preview">
+                            <?php else: ?>
+                                <img src="../../public/images/default.jpg" alt="Poster par défaut" class="poster-preview" id="preview">
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
                 

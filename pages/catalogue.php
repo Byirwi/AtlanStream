@@ -163,31 +163,29 @@ try {
             // Afficher l'indicateur de chargement
             loadingIndicator.style.display = 'block';
             
-            // Utiliser fetch API au lieu de XMLHttpRequest
-            fetch('../assets/ajax/search_movies.php?q=' + encodeURIComponent(searchTerm))
+            // Utiliser le fichier de test d'abord pour vérifier que l'AJAX fonctionne
+            fetch('../assets/ajax/test.php')
                 .then(response => {
+                    console.log('Réponse reçue:', response);
                     if (!response.ok) {
                         throw new Error('Erreur réseau: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    // Masquer l'indicateur de chargement
+                    console.log('Données reçues:', data);
                     loadingIndicator.style.display = 'none';
                     
-                    if (data.success) {
-                        // Mettre à jour les résultats de recherche
-                        searchResults.innerHTML = data.html;
-                    } else {
-                        // Afficher un message d'erreur
-                        searchResults.innerHTML = '<p class="error-message">' + data.message + '</p>';
-                        console.error('Erreur de recherche:', data.message);
-                    }
+                    // Si le test fonctionne, afficher un message temporaire
+                    searchResults.innerHTML = '<p>Test réussi! Heure du serveur: ' + data.time + '</p>';
+                    
+                    // Une fois que le test fonctionne, vous pouvez revenir à la version originale
+                    // avec search_movies.php
                 })
                 .catch(error => {
-                    loadingIndicator.style.display = 'none';
-                    searchResults.innerHTML = '<p class="error-message">Erreur lors de la recherche. Veuillez réessayer.</p>';
                     console.error('Erreur AJAX:', error);
+                    loadingIndicator.style.display = 'none';
+                    searchResults.innerHTML = '<p class="error-message">Erreur: ' + error.message + '</p>';
                 });
         }
         

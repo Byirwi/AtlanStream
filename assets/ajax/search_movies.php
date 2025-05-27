@@ -40,30 +40,31 @@ try {
     error_log("Connexion à la base de données OK");
     
     // Préparer la requête SQL avec recherche sur le titre et la description
+    // Utiliser des paramètres positionnels (?) au lieu de paramètres nommés (:search)
     $stmt = $pdo->prepare("
         SELECT * FROM movies 
-        WHERE title LIKE :search OR description LIKE :search 
+        WHERE title LIKE ? OR description LIKE ?
         ORDER BY id DESC
     ");
     
-    // Exécuter la requête
-    $stmt->execute(['search' => '%' . $searchTerm . '%']);
+    // Exécuter la requête avec deux paramètres identiques
+    $searchParam = '%' . $searchTerm . '%';
+    error_log("Exécution de la requête de recherche avec le paramètre: " . $searchParam);
+    $stmt->execute([$searchParam, $searchParam]);
     
     // Récupérer les résultats
     $movies = $stmt->fetchAll();
     
-    // Pour chaque film, récupérer les catégories associées
+    // Utiliser une requête SQL plus simple sans paramètres pour tester
+    error_log("Exécution d'une requête simplifiée");
+    $stmt = $pdo->query("SELECT * FROM movies ORDER BY id DESC LIMIT 10");
+    
+    // Récupérer les résultats
+    $movies = $stmt->fetchAll();
+    
+    // Désactiver temporairement la récupération des catégories pour isoler le problème
     foreach ($movies as &$movie) {
-        $stmtCategories = $pdo->prepare("
-            SELECT c.name 
-            FROM categories c
-            JOIN movie_categories mc ON c.id = mc.category_id
-            WHERE mc.movie_id = ?
-            ORDER BY c.name
-        ");
-        $stmtCategories->execute([$movie['id']]);
-        $categories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN);
-        $movie['categories'] = $categories;
+        $movie['categories'] = []; // Catégories vides pour le test
     }
     unset($movie);
     
@@ -101,47 +102,46 @@ try {
                         <div class="movie-categories">
                             <?php foreach ($movie['categories'] as $category): ?>
                                 <span class="movie-category"><?= htmlspecialchars($category) ?></span>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
                         <span class="movie-category">Non catégorisé</span>
                     <?php endif; ?>
                 </div>
             </div>
-            <?php
-        }
+            <?phpphp else: ?>
+        }      <span class="movie-category">Non catégorisé</span>
+    } else {   <?php endif; ?>
+        echo '<p class="no-results">Aucun film ne correspond à votre recherche "' . htmlspecialchars($searchTerm) . '"</p>';       </div>
+    }</div>
+    
+    $html = ob_get_clean();   }
     } else {
-        echo '<p class="no-results">Aucun film ne correspond à votre recherche "' . htmlspecialchars($searchTerm) . '"</p>';
-    }
-    
-    $html = ob_get_clean();
-    
-    // Retourner les résultats au format JSON
-    header('Content-Type: application/json');
+    // Retourner les résultats au format JSONresults">Aucun film ne correspond à votre recherche "' . htmlspecialchars($searchTerm) . '"</p>';
+    header('Content-Type: application/json');}
     echo json_encode([
         'success' => true,
         'count' => count($movies),
-        'html' => $html
-    ]);
+        'html' => $htmltats au format JSON
+    ]);ion/json');
     
-} catch (PDOException $e) {
-    header('Content-Type: application/json');
+} catch (PDOException $e) { 'success' => true,
+    header('Content-Type: application/json');    'count' => count($movies),
     echo json_encode([
         'success' => false,
         'message' => 'Erreur de base de données: ' . $e->getMessage()
     ]);
     
-    // Journaliser l'erreur avec plus de détails
-    error_log("Erreur PDO lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
-    exit;
+    // Journaliser l'erreur avec plus de détailso json_encode([
+    error_log("Erreur PDO lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());    'success' => false,
+    exit; ' . $e->getMessage()
 } catch (Exception $e) {
     header('Content-Type: application/json');
-    echo json_encode([
-        'success' => false,
+    echo json_encode([eur avec plus de détails
+        'success' => false,e AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
         'message' => 'Erreur lors de la recherche: ' . $e->getMessage()
     ]);
     
-    // Journaliser l'erreur avec plus de détails
-    error_log("Erreur générale lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
+    // Journaliser l'erreur avec plus de détailso json_encode([
+    error_log("Erreur générale lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());    'success' => false,
+    exit;e: ' . $e->getMessage()
+}
     exit;
 }

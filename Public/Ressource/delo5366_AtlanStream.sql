@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : ven. 16 mai 2025 à 18:43
--- Version du serveur : 11.4.6-MariaDB
+-- Généré le : mar. 27 mai 2025 à 10:28
+-- Version du serveur : 11.4.7-MariaDB
 -- Version de PHP : 8.3.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -44,7 +44,6 @@ INSERT INTO `categories` (`id`, `name`, `description`) VALUES
 (9, 'Fantastique', 'Films fantastiques sur les mythes et légendes atlantes'),
 (10, 'Action', 'Films d\'action avec des batailles sous-marines et des quêtes atlantes'),
 (11, 'Thriller', NULL),
-(12, 'Thriller/Documentaire', NULL),
 (13, 'guerre', NULL);
 
 -- --------------------------------------------------------
@@ -71,7 +70,8 @@ CREATE TABLE `movies` (
 --
 
 INSERT INTO `movies` (`id`, `title`, `description`, `poster_url`, `category_id`, `created_at`, `year`, `duration`, `director`, `actors`) VALUES
-(1, 'Le Chant du Loup', 'Le Chant du loup est un thriller militaire français où un expert en acoustique sous-marine doit empêcher une guerre nucléaire imminente. Réaliste et intense, le film explore les coulisses de la dissuasion à bord d’un sous-marin.', '1746455338_6818cb2a6b3f8.jpg', 11, '2025-05-05 14:28:58', NULL, 0, NULL, NULL);
+(1, 'le chant du loup', 'Le Chant du loup est un thriller militaire français où un expert en acoustique sous-marine doit empêcher une guerre nucléaire imminente. Réaliste et intense, le film explore les coulisses de la dissuasion à bord d’un sous-marin.', '1748331862_68356d5663ba4.jpg', NULL, '2025-05-27 07:44:22', 2019, 180, 'Antonin Baudry', 'François Civil, Omar Sy'),
+(2, 'Joker', 'Le deuxième volet intitulé Joker: Folie à Deux sortira le 2 octobre 2024 (prévu). Il mettra en scène Harley Quinn, jouée par Lady Gaga, et comportera des éléments de comédie musicale.', '1748332268_68356eec8416a.jpg', NULL, '2025-05-27 07:45:42', 2019, 122, 'Joaquin Phoenix', '');
 
 -- --------------------------------------------------------
 
@@ -89,7 +89,9 @@ CREATE TABLE `movie_categories` (
 --
 
 INSERT INTO `movie_categories` (`movie_id`, `category_id`) VALUES
-(1, 11);
+(1, 11),
+(2, 11),
+(1, 13);
 
 -- --------------------------------------------------------
 
@@ -112,11 +114,12 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `is_admin`, `created_at`) VALUES
 (1, 'admin', 'admin@atlanstream.com', '$2y$10$SZFbpYMWC3aNGKuK5iok5O2i9ryrWfKHUA5MKA4iXEH0WB2A7JIt2', 1, '2025-05-05 13:01:14'),
-(3, 'Byirwi', 'depaiva.louka@gmail.com', '$2y$10$xEVcO2FkVeSu2mB9.ZiSPuT1O32OPeG.V4T0a3cxp75y69jBYK0.u', 1, '2025-05-05 13:20:38'),
-(4, 'louka_test_no1', NULL, '$2y$10$mWl/2vvyKiQ5qtnpIitEzOATavOMBa2ahQrx46ds4enIL8kmpenU6', 0, '2025-05-05 14:45:13'),
+(3, 'Byirwi', 'depaiva.louka@gmail.com', '$2y$10$5AjgPu2izyTTb8lPEVaVKetwaCMEE61YtCiOkdsKkUhh9.vh.R29W', 1, '2025-05-05 13:20:38'),
 (5, 'Lolan', 'lolan.flr.perso@gmail.com', '$2y$10$K231TmWFTIRn6VD22BZFiu7x7OPDSmW159MYgp2orfYHaE6dlSTfy', 1, '2025-05-05 19:31:09'),
 (6, 'liam', NULL, '$2y$10$.6lvq3UYTZc5dcE26LaffO.A9j6lnLX/N3bjO4Xo981daGNyxKWue', 1, '2025-05-06 12:48:18'),
-(7, 'Thomas', 'bizarrepourquoituveuxmonmail@gmail.com', '$2y$10$m492yqh8sxpSmVXXFnMAguZ/E58PPZw9N3Paf7IpLSyfSfIPB5MuO', 0, '2025-05-14 19:12:17');
+(7, 'Thomas', 'bizarrepourquoituveuxmonmail@gmail.com', '$2y$10$m492yqh8sxpSmVXXFnMAguZ/E58PPZw9N3Paf7IpLSyfSfIPB5MuO', 1, '2025-05-14 19:12:17'),
+(8, 'louka_test', NULL, '$2y$10$hjE.isp8FxhX45xc9lUH8uF4dhVY1BbLWSWAGu/1l0JbNsaHXtNb.', 0, '2025-05-27 07:29:05'),
+(9, 'Hashtag 628', 'zogoobamenicolas@gmail.com', '$2y$10$qt2LRQ0R18JZepriHlB15.ErcKIbVYUzIhdLwLnwBm9T1d97iRRBK', 0, '2025-05-27 07:29:49');
 
 --
 -- Index pour les tables déchargées
@@ -170,7 +173,7 @@ ALTER TABLE `movies`
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Contraintes pour les tables déchargées

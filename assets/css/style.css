@@ -407,8 +407,14 @@ nav ul li a:hover {
     transition: transform 0.6s ease;
 }
 
+/* Disable zoom effect on movie posters */
+.movie-card .movie-poster img {
+    transform: none !important;
+    transition: none !important;
+}
+
 .movie-card:hover .movie-poster img {
-    transform: scale(1.1);
+    transform: none !important;
 }
 
 .movie-info {

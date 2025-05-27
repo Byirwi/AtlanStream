@@ -36,22 +36,25 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
 
 // Récupérer tous les films avec leurs catégories
 try {
-    // Récupérer les films de base
+    // Récupérer les films de base - ajout de ORDER BY pour garantir l'ordre
     $films = $pdo->query("SELECT movies.* FROM movies ORDER BY movies.id DESC")->fetchAll();
     
     // Pour chaque film, récupérer les catégories associées
     foreach ($films as &$film) {
-        $stmt = $pdo->prepare("
+        $stmtCategories = $pdo->prepare("
             SELECT c.name 
             FROM categories c
             JOIN movie_categories mc ON c.id = mc.category_id
             WHERE mc.movie_id = ?
             ORDER BY c.name
         ");
-        $stmt->execute([$film['id']]);
-        $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmtCategories->execute([$film['id']]);
+        $categories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN);
         $film['categories'] = $categories;
     }
+    // Important: libérer la référence
+    unset($film);
+    
 } catch (Exception $e) {
     $films = [];
     $_SESSION['error'] = "Erreur lors de la récupération des films: " . $e->getMessage();
@@ -147,7 +150,7 @@ try {
                             ? '../../public/images/' . $film['poster_url'] 
                             : '../../public/images/default.jpg';
                         ?>
-                        <img src="<?= $poster ?>" alt="<?= htmlspecialchars($film['title']) ?>" style="width:50px;height:70px;object-fit:cover;border-radius:4px;">
+                        <img src="<?= $poster ?>" alt="<?= htmlspecialchars($film['title']) ?>" class="poster-thumb">
                     </td>
                     <td><?= htmlspecialchars($film['title']) ?></td>
                     <td>

@@ -9,22 +9,26 @@ redirectIfNotLoggedIn();
 // Récupérer les films depuis la base de données
 try {
     // Récupérer les films de base
-    $stmt = $pdo->query("SELECT * FROM movies LIMIT 30");
+    $stmt = $pdo->query("SELECT * FROM movies ORDER BY id DESC LIMIT 30");
     $movies = $stmt->fetchAll();
     
     // Pour chaque film, récupérer les catégories associées
     foreach ($movies as &$movie) {
-        $stmt = $pdo->prepare("
+        // Utiliser un nom de variable différent pour éviter les conflits
+        $stmtCategories = $pdo->prepare("
             SELECT c.name 
             FROM categories c
             JOIN movie_categories mc ON c.id = mc.category_id
             WHERE mc.movie_id = ?
             ORDER BY c.name
         ");
-        $stmt->execute([$movie['id']]);
-        $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmtCategories->execute([$movie['id']]);
+        $categories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN);
         $movie['categories'] = $categories;
     }
+    // Important: libérer la référence
+    unset($movie);
+    
 } catch (Exception $e) {
     // En cas d'erreur, initialiser $movies comme un tableau vide
     $movies = [];
@@ -120,6 +124,7 @@ if (empty($movies)) {
                             <a href="admin/admin_films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
                         </div>
                     <?php endif; ?>
+                    <!-- Ajout d'un identifiant de débogage pour chaque carte -->
                     <div class="movie-poster">
                         <?php 
                         $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../public/images/' . $movie['poster_url']) 
@@ -130,6 +135,10 @@ if (empty($movies)) {
                     </div>
                     <div class="movie-info">
                         <h3><?= htmlspecialchars($movie['title']) ?></h3>
+                        <!-- Affichage de l'ID pour le débogage -->
+                        <?php if (isAdmin()): ?>
+                            <small style="color: #999;">[ID: <?= $movie['id'] ?>]</small>
+                        <?php endif; ?>
                         <?php if (!empty($movie['year'])): ?>
                             <div class="movie-year"><?= htmlspecialchars($movie['year']) ?></div>
                         <?php endif; ?>

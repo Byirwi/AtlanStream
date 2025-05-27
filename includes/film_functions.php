@@ -92,11 +92,11 @@ function rateMovie($filmId, $userId, $rating, $pdo) {
         
         if ($exists) {
             // Mettre à jour la note existante
-            $stmt = $pdo->prepare("UPDATE movie_ratings SET rating = ?, updated_at = NOW() WHERE movie_id = ? AND user_id = ?");
+            $stmt = $pdo->prepare("UPDATE movie_ratings SET rating = ? WHERE movie_id = ? AND user_id = ?");
             return $stmt->execute([$rating, $filmId, $userId]);
         } else {
             // Créer une nouvelle note
-            $stmt = $pdo->prepare("INSERT INTO movie_ratings (movie_id, user_id, rating, created_at) VALUES (?, ?, ?, NOW())");
+            $stmt = $pdo->prepare("INSERT INTO movie_ratings (movie_id, user_id, rating) VALUES (?, ?, ?)");
             return $stmt->execute([$filmId, $userId, $rating]);
         }
     } catch (Exception $e) {

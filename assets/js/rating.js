@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const ratingMessage = document.querySelector('.rating-message');
     
     if (ratingForm) {
-        // Pré-remplir la note de l'utilisateur s'il en a déjà donné une
-        fetch(`../../assets/ajax/get_user_rating.php?movie_id=${ratingForm.dataset.movieId}`)
+        // Précharger la note de l'utilisateur s'il en a déjà donné une
+        const movieId = ratingForm.dataset.movieId;
+        
+        fetch(`../assets/ajax/get_user_rating.php?movie_id=${movieId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.rating) {
@@ -20,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             formData.append('movie_id', this.dataset.movieId);
             
-            fetch('../../assets/ajax/rate_movie.php', {
+            fetch('../assets/ajax/rate_movie.php', {
                 method: 'POST',
                 body: formData
             })
@@ -30,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message success';
                     
-                    // Rafraîchir la page après 1 seconde pour mettre à jour la note moyenne
-                    setTimeout(() => window.location.reload(), 1000);
+                    // Rafraîchir la page après 1.5 secondes pour mettre à jour la note moyenne
+                    setTimeout(() => window.location.reload(), 1500);
                 } else {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message error';

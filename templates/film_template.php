@@ -98,6 +98,61 @@
             transform: translateY(-2px);
         }
         
+        .rating-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .star {
+            font-size: 1.2rem;
+            color: var(--star-color);
+        }
+        
+        .star.filled {
+            color: var(--star-color-filled);
+        }
+        
+        .rating-count {
+            font-size: 1rem;
+            color: var(--gray-text);
+        }
+        
+        .rating-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .rate-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        .rate-btn:hover {
+            background-color: var(--primary-color-hover);
+        }
+        
         @media (max-width: 768px) {
             .film-header {
                 flex-direction: column;
@@ -135,16 +190,17 @@
                     <img src="<?= $posterPath ?>" alt="<?= htmlspecialchars($film['title']) ?>">
                 </div>
                 <div class="film-info">
-                    <div class="film-title-row">
-                        <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
-                        
-                        <!-- Bouton favoris -->
-                        <?php $isFavorite = isInFavorites($film['id'], $_SESSION['user_id'] ?? 0, $pdo); ?>
-                        <button class="favorite-btn <?= $isFavorite ? 'is-favorite' : '' ?>" 
-                                data-movie-id="<?= $film['id'] ?>"
-                                title="<?= $isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>">
-                            <span class="favorite-icon">❤</span>
-                        </button>
+                    <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
+                    
+                    <!-- Affichage de la note moyenne -->
+                    <?php $rating = getMovieRating($film['id'], $pdo); ?>
+                    <div class="rating-display">
+                        <div class="stars">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <span class="star <?= ($i <= round($rating['average'])) ? 'filled' : '' ?>">★</span>
+                            <?php endfor; ?>
+                        </div>
+                        <span class="rating-count"><?= $rating['average'] ?>/5 (<?= $rating['count'] ?> votes)</span>
                     </div>
                     
                     <div class="film-meta">
@@ -163,19 +219,6 @@
                         <?php if (!empty($film['director'])): ?>
                         <div class="film-meta-item">
                             <span>🎬</span> Réalisé par <?= htmlspecialchars($film['director']) ?>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <!-- Affichage de la note moyenne -->
-                        <?php $rating = getMovieRating($film['id'], $pdo); ?>
-                        <?php if ($rating['count'] > 0): ?>
-                        <div class="film-meta-item film-rating">
-                            <div class="stars">
-                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                    <span class="star <?= ($i <= round($rating['average'])) ? 'filled' : '' ?>">★</span>
-                                <?php endfor; ?>
-                            </div>
-                            <span><?= $rating['average'] ?>/5 (<?= $rating['count'] ?> votes)</span>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -202,17 +245,17 @@
                 </div>
             </div>
             
-            <!-- Système de notation pour l'utilisateur connecté -->
-            <div class="user-rating">
-                <h3>Votre note</h3>
-                <form action="../../assets/ajax/rate_movie.php" method="post" class="rating-form" data-movie-id="<?= $film['id'] ?>">
+            <!-- Système de notation -->
+            <div class="rating-container">
+                <h3>Notez ce film</h3>
+                <form class="rating-form" data-movie-id="<?= $film['id'] ?>">
                     <div class="rating-stars">
                         <?php for ($i = 5; $i >= 1; $i--): ?>
                             <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" />
-                            <label for="star<?= $i ?>" title="<?= $i ?> étoiles">★</label>
+                            <label for="star<?= $i ?>" title="<?= $i ?> étoile<?= $i > 1 ? 's' : '' ?>">★</label>
                         <?php endfor; ?>
                     </div>
-                    <button type="submit" class="rate-btn">Noter</button>
+                    <button type="submit" class="rate-btn">Envoyer ma note</button>
                 </form>
                 <div class="rating-message"></div>
             </div>
@@ -227,6 +270,5 @@
     
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/rating.js"></script>
-    <script src="../../assets/js/favorites.js"></script>
 </body>
 </html>

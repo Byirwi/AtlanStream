@@ -34,6 +34,9 @@ try {
         $stmtCategories->execute([$movie['id']]);
         $categories = $stmtCategories->fetchAll(PDO::FETCH_COLUMN);
         $movie['categories'] = $categories;
+        
+        // Récupérer la note moyenne
+        $movie['rating'] = getMovieRating($movie['id'], $pdo);
     }
     // Important: libérer la référence
     unset($movie);
@@ -153,6 +156,19 @@ try {
                     </div>
                     <div class="movie-info">
                         <h3><?= htmlspecialchars($movie['title']) ?></h3>
+                        
+                        <!-- Affichage de la note moyenne -->
+                        <?php if ($movie['rating']['count'] > 0): ?>
+                        <div class="rating-display small">
+                            <div class="stars">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?= ($i <= round($movie['rating']['average'])) ? 'filled' : '' ?>">★</span>
+                                <?php endfor; ?>
+                            </div>
+                            <span class="rating-count">(<?= $movie['rating']['count'] ?>)</span>
+                        </div>
+                        <?php endif; ?>
+                        
                         <!-- Affichage de l'ID pour le débogage -->
                         <?php if (isAdmin()): ?>
                             <small style="color: #999;">[ID: <?= $movie['id'] ?>]</small>

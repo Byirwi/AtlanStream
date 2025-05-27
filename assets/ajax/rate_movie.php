@@ -5,6 +5,7 @@ require_once '../../includes/film_functions.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isLoggedIn()) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'Vous devez être connecté pour noter un film'
@@ -14,6 +15,7 @@ if (!isLoggedIn()) {
 
 // Vérifier si la requête est une requête POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'Méthode non autorisée'
@@ -28,6 +30,7 @@ $userId = $_SESSION['user_id'];
 
 // Valider les données
 if ($movieId <= 0) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'ID de film invalide'
@@ -36,6 +39,7 @@ if ($movieId <= 0) {
 }
 
 if ($rating < 1 || $rating > 5) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'La note doit être entre 1 et 5'
@@ -44,6 +48,7 @@ if ($rating < 1 || $rating > 5) {
 }
 
 // Enregistrer la note
+header('Content-Type: application/json');
 if (rateMovie($movieId, $userId, $rating, $pdo)) {
     echo json_encode([
         'success' => true,

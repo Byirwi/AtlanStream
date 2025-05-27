@@ -6,164 +6,6 @@
     <title><?= htmlspecialchars($film['title']) ?> - AtlanStream</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/rating.css">
-    <style>
-        .film-detail {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 30px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow-strong);
-        }
-        
-        .film-header {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .film-poster {
-            flex: 0 0 300px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: var(--shadow-medium);
-        }
-        
-        .film-poster img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .film-info {
-            flex: 1;
-        }
-        
-        .film-title {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-        }
-        
-        .film-meta {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .film-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray-text);
-        }
-        
-        .film-description {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            margin-bottom: 30px;
-        }
-        
-        .film-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .film-category {
-            background: var(--accent-color-soft);
-            color: var(--primary-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        
-        .back-button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 25px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background-color: var(--primary-color-hover);
-            transform: translateY(-2px);
-        }
-        
-        .rating-display {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .stars {
-            display: flex;
-            gap: 2px;
-        }
-        
-        .star {
-            font-size: 1.2rem;
-            color: var(--star-color);
-        }
-        
-        .star.filled {
-            color: var(--star-color-filled);
-        }
-        
-        .rating-count {
-            font-size: 1rem;
-            color: var(--gray-text);
-        }
-        
-        .rating-container {
-            margin-top: 30px;
-            padding: 20px;
-            background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow-medium);
-        }
-        
-        .rating-stars {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .rate-btn {
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-        
-        .rate-btn:hover {
-            background-color: var(--primary-color-hover);
-        }
-        
-        @media (max-width: 768px) {
-            .film-header {
-                flex-direction: column;
-            }
-            .film-poster {
-                flex: 0 0 auto;
-                max-width: 250px;
-                margin: 0 auto;
-            }
-        }
-    </style>
 </head>
 <body class="dark">
     <header>
@@ -174,9 +16,9 @@
             <ul>
                 <li><a href="../../pages/Accueil.php">Accueil</a></li>
                 <li><a href="../../pages/catalogue.php">Catalogue</a></li>
-                <li><a href="favoris.php">Mes Favoris</a></li>
-                <li><a href="compte.php">Mon compte</a></li>
-
+                <li><a href="../../pages/favoris.php">Mes Favoris</a></li>
+                <li><a href="../../pages/compte.php">Mon compte</a></li>
+                <li><a href="../../pages/logout.php" class="logout-btn">Déconnexion</a></li>
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
                         <span id="theme-icon">☀️</span>
@@ -193,7 +35,17 @@
                     <img src="<?= $posterPath ?>" alt="<?= htmlspecialchars($film['title']) ?>">
                 </div>
                 <div class="film-info">
-                    <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
+                    <div class="film-title-row">
+                        <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
+                        
+                        <!-- Bouton favoris -->
+                        <?php $isFavorite = isInFavorites($film['id'], $_SESSION['user_id'] ?? 0, $pdo); ?>
+                        <button class="favorite-btn <?= $isFavorite ? 'is-favorite' : '' ?>" 
+                                data-movie-id="<?= $film['id'] ?>"
+                                title="<?= $isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>">
+                            <span class="favorite-icon">❤</span>
+                        </button>
+                    </div>
                     
                     <!-- Affichage de la note moyenne -->
                     <?php $rating = getMovieRating($film['id'], $pdo); ?>
@@ -206,45 +58,32 @@
                         <span class="rating-count"><?= $rating['average'] ?>/5 (<?= $rating['count'] ?> votes)</span>
                     </div>
                     
-                    <div class="film-meta">
-                        <?php if (!empty($film['year'])): ?>
-                        <div class="film-meta-item">
-                            <span>📅</span> <?= htmlspecialchars($film['year']) ?>
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($film['duration'])): ?>
-                        <div class="film-meta-item">
-                            <span>⏱️</span> <?= htmlspecialchars($film['duration']) ?> min
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($film['director'])): ?>
-                        <div class="film-meta-item">
-                            <span>🎬</span> Réalisé par <?= htmlspecialchars($film['director']) ?>
-                        </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php if (!empty($film['year'])): ?>
+                        <div class="film-year">Année: <?= htmlspecialchars($film['year']) ?></div>
+                    <?php endif; ?>
                     
-                    <?php if (!empty($film['description'])): ?>
-                    <div class="film-description">
-                        <?= nl2br(htmlspecialchars($film['description'])) ?>
-                    </div>
+                    <?php if (!empty($film['director'])): ?>
+                        <div class="film-director">Réalisateur: <?= htmlspecialchars($film['director']) ?></div>
                     <?php endif; ?>
                     
                     <?php if (!empty($film['actors'])): ?>
-                    <div class="film-meta-item">
-                        <strong>Avec:</strong> <?= htmlspecialchars($film['actors']) ?>
-                    </div>
+                        <div class="film-actors">Acteurs: <?= htmlspecialchars($film['actors']) ?></div>
                     <?php endif; ?>
                     
                     <?php if (!empty($categories)): ?>
-                    <div class="film-categories">
-                        <?php foreach ($categories as $category): ?>
-                        <span class="film-category"><?= htmlspecialchars($category) ?></span>
-                        <?php endforeach; ?>
-                    </div>
+                        <div class="film-categories">
+                            Catégories: 
+                            <?php foreach ($categories as $index => $category): ?>
+                                <span class="film-category"><?= htmlspecialchars($category) ?></span>
+                                <?= ($index < count($categories) - 1) ? ', ' : '' ?>
+                            <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
+                    
+                    <div class="film-description">
+                        <h2>Synopsis</h2>
+                        <p><?= htmlspecialchars($film['description']) ?></p>
+                    </div>
                 </div>
             </div>
             
@@ -273,5 +112,6 @@
     
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/rating.js"></script>
+    <script src="../../assets/js/favorites.js"></script>
 </body>
 </html>

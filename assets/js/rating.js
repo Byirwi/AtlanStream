@@ -3,22 +3,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const ratingMessage = document.querySelector('.rating-message');
     
     if (ratingForm) {
-        // Récupérer l'ID du film depuis l'attribut data-movie-id
+        console.log('Formulaire de notation trouvé');
+        // Récupérer l'ID du film
         const movieId = ratingForm.dataset.movieId;
+        console.log('ID du film:', movieId);
         
         // Précharger la note de l'utilisateur s'il en a déjà donné une
-        fetch(`../assets/ajax/get_user_rating.php?movie_id=${movieId}`)
-            .then(response => response.json())
+        fetch(`../../assets/ajax/get_user_rating.php?movie_id=${movieId}`)
+            .then(response => {
+                console.log('Réponse get_user_rating:', response);
+                return response.json();
+            })
             .then(data => {
+                console.log('Données get_user_rating:', data);
                 if (data.success && data.rating) {
                     document.querySelector(`#star${data.rating}`).checked = true;
                 }
             })
-            .catch(error => console.error('Erreur:', error));
+            .catch(error => console.error('Erreur lors de la récupération de la note:', error));
         
-        // Gérer la soumission du formulaire
+        // Soumettre la note
         ratingForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Soumission du formulaire de notation');
             
             // Récupérer la note sélectionnée
             const selectedRating = document.querySelector('input[name="rating"]:checked');
@@ -28,18 +35,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Créer les données du formulaire
             const formData = new FormData();
             formData.append('movie_id', movieId);
             formData.append('rating', selectedRating.value);
             
-            // Envoyer la note
-            fetch('../assets/ajax/rate_movie.php', {
+            console.log('Envoi de la note:', selectedRating.value, 'pour le film:', movieId);
+            
+            fetch('../../assets/ajax/rate_movie.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Réponse rate_movie:', response);
+                return response.json();
+            })
             .then(data => {
+                console.log('Données rate_movie:', data);
                 if (data.success) {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message success';
@@ -52,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Erreur:', error);
+                console.error('Erreur lors de la notation:', error);
                 ratingMessage.textContent = 'Une erreur s\'est produite';
                 ratingMessage.className = 'rating-message error';
             });

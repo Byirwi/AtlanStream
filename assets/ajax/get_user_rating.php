@@ -3,6 +3,11 @@ require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/film_functions.php';
 
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Vérifier si l'utilisateur est connecté
 if (!isLoggedIn()) {
     header('Content-Type: application/json');
@@ -27,10 +32,18 @@ if ($movieId <= 0) {
 }
 
 // Récupérer la note de l'utilisateur
-$rating = getUserRating($movieId, $userId, $pdo);
-
-header('Content-Type: application/json');
-echo json_encode([
-    'success' => true,
-    'rating' => $rating
-]);
+try {
+    $rating = getUserRating($movieId, $userId, $pdo);
+    
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'rating' => $rating
+    ]);
+} catch (Exception $e) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erreur: ' . $e->getMessage()
+    ]);
+}

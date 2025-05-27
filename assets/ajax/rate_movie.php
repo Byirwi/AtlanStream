@@ -3,6 +3,14 @@ require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/film_functions.php';
 
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Journaliser les données reçues
+error_log("rate_movie.php appelé avec POST: " . print_r($_POST, true));
+
 // Vérifier si l'utilisateur est connecté
 if (!isLoggedIn()) {
     header('Content-Type: application/json');
@@ -48,15 +56,17 @@ if ($rating < 1 || $rating > 5) {
 }
 
 // Enregistrer la note
-header('Content-Type: application/json');
-if (rateMovie($movieId, $userId, $rating, $pdo)) {
+try {
+    $success = rateMovie($movieId, $userId, $rating, $pdo);
+    header('Content-Type: application/json');
     echo json_encode([
-        'success' => true,
-        'message' => 'Note enregistrée avec succès'
+        'success' => $success,
+        'message' => $success ? 'Note enregistrée avec succès' : 'Erreur lors de l\'enregistrement de la note'
     ]);
-} else {
+} catch (Exception $e) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
-        'message' => 'Erreur lors de l\'enregistrement de la note'
+        'message' => 'Erreur: ' . $e->getMessage()
     ]);
 }

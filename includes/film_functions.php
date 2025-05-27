@@ -75,12 +75,35 @@ function deleteFilmPage($filmId) {
 }
 
 /**
+ * Récupère la note moyenne d'un film
+ * 
+ * @param int $filmId ID du film
+ * @param PDO $pdo Connexion PDO à la base de données
+ * @return array Note moyenne et nombre de votes
+ */
+function getMovieRating($filmId, $pdo) {
+    try {
+        $stmt = $pdo->prepare("SELECT AVG(rating) as average, COUNT(*) as count FROM movie_ratings WHERE movie_id = ?");
+        $stmt->execute([$filmId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'average' => round($result['average'] ?? 0, 1),
+            'count' => (int)$result['count']
+        ];
+    } catch (Exception $e) {
+        error_log("Erreur lors de la récupération de la note du film: " . $e->getMessage());
+        return ['average' => 0, 'count' => 0];
+    }
+}
+
+/**
  * Ajoute ou met à jour la note d'un utilisateur pour un film
  * 
  * @param int $filmId ID du film
  * @param int $userId ID de l'utilisateur
  * @param int $rating Note (1-5)
- * @param PDO $pdo Connexion PDO
+ * @param PDO $pdo Connexion PDO à la base de données
  * @return bool Succès de l'opération
  */
 function rateMovie($filmId, $userId, $rating, $pdo) {
@@ -106,34 +129,11 @@ function rateMovie($filmId, $userId, $rating, $pdo) {
 }
 
 /**
- * Récupère la note moyenne d'un film
- * 
- * @param int $filmId ID du film
- * @param PDO $pdo Connexion PDO
- * @return array Note moyenne et nombre de votes
- */
-function getMovieRating($filmId, $pdo) {
-    try {
-        $stmt = $pdo->prepare("SELECT AVG(rating) as average, COUNT(*) as count FROM movie_ratings WHERE movie_id = ?");
-        $stmt->execute([$filmId]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return [
-            'average' => round($result['average'] ?? 0, 1),
-            'count' => (int)$result['count']
-        ];
-    } catch (Exception $e) {
-        error_log("Erreur lors de la récupération de la note du film: " . $e->getMessage());
-        return ['average' => 0, 'count' => 0];
-    }
-}
-
-/**
  * Récupère la note donnée par un utilisateur à un film
  * 
  * @param int $filmId ID du film
  * @param int $userId ID de l'utilisateur
- * @param PDO $pdo Connexion PDO
+ * @param PDO $pdo Connexion PDO à la base de données
  * @return int|null Note de l'utilisateur ou null si pas de note
  */
 function getUserRating($filmId, $userId, $pdo) {

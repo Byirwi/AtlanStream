@@ -103,6 +103,15 @@
     color: #e53e3e;
 }
 
+/* Version réduite pour les cartes du catalogue */
+.rating-display.small .stars {
+    font-size: 0.9rem;
+}
+
+.rating-display.small .rating-count {
+    font-size: 0.75rem;
+}
+
 /* Styles pour le thème clair */
 .light .star.filled {
     color: #F6E05E;

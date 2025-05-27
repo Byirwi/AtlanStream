@@ -174,6 +174,9 @@
             <ul>
                 <li><a href="../../pages/Accueil.php">Accueil</a></li>
                 <li><a href="../../pages/catalogue.php">Catalogue</a></li>
+                <li><a href="favoris.php">Mes Favoris</a></li>
+                <li><a href="compte.php">Mon compte</a></li>
+
                 <li>
                     <button id="theme-toggle" class="theme-toggle" title="Changer de thème">
                         <span id="theme-icon">☀️</span>

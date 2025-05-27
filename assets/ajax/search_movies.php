@@ -1,7 +1,7 @@
 <?php
-require_once '../includes/session.php';
-require_once '../config/db_connect.php';
-require_once '../includes/admin-auth.php';
+require_once '../../includes/session.php';
+require_once '../../config/db_connect.php';
+require_once '../../includes/admin-auth.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
@@ -64,15 +64,15 @@ try {
             <div class="movie-card">
                 <?php if (isAdmin()): ?>
                     <div class="admin-controls">
-                        <a href="admin/admin_edit-film.php?id=<?= $movie['id'] ?>" class="edit-btn" title="Modifier">✏️</a>
-                        <a href="admin/admin_films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
+                        <a href="../../pages/admin/admin_edit-film.php?id=<?= $movie['id'] ?>" class="edit-btn" title="Modifier">✏️</a>
+                        <a href="../../pages/admin/admin_films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
                     </div>
                 <?php endif; ?>
                 <div class="movie-poster">
                     <?php 
-                    $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../public/images/' . $movie['poster_url']) 
-                        ? '../public/images/' . $movie['poster_url'] 
-                        : '../public/images/default.jpg';
+                    $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../../public/images/' . $movie['poster_url']) 
+                        ? '../../public/images/' . $movie['poster_url'] 
+                        : '../../public/images/default.jpg';
                     ?>
                     <img src="<?= $poster ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
                 </div>
@@ -119,6 +119,6 @@ try {
         'message' => 'Erreur lors de la recherche: ' . $e->getMessage()
     ]);
     
-    // Journaliser l'erreur
-    error_log("Erreur lors de la recherche AJAX: " . $e->getMessage());
+    // Journaliser l'erreur avec plus de détails
+    error_log("Erreur lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
 }

@@ -68,22 +68,6 @@ try {
     <title>Gestion des films - AtlanStream Admin</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
-    <style>
-        .category-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 5px;
-        }
-        .category-tag {
-            background-color: var(--accent-color-soft);
-            color: var(--primary-color);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-    </style>
 </head>
 <body class="dark">
     <header>

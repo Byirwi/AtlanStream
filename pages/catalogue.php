@@ -163,41 +163,32 @@ try {
             // Afficher l'indicateur de chargement
             loadingIndicator.style.display = 'block';
             
-            // Créer une requête AJAX
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', '../ajax/search_movies.php?q=' + encodeURIComponent(searchTerm), true);
-            
-            xhr.onload = function() {
-                if (xhr.status === 200) {
+            // Utiliser fetch API au lieu de XMLHttpRequest
+            fetch('../assets/ajax/search_movies.php?q=' + encodeURIComponent(searchTerm))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     // Masquer l'indicateur de chargement
                     loadingIndicator.style.display = 'none';
                     
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        
-                        if (response.success) {
-                            // Mettre à jour les résultats de recherche
-                            searchResults.innerHTML = response.html;
-                        } else {
-                            // Afficher un message d'erreur
-                            searchResults.innerHTML = '<p class="error-message">' + response.message + '</p>';
-                        }
-                    } catch (e) {
-                        console.error('Erreur lors du parsing JSON:', e);
-                        searchResults.innerHTML = '<p class="error-message">Erreur lors du traitement de la réponse.</p>';
+                    if (data.success) {
+                        // Mettre à jour les résultats de recherche
+                        searchResults.innerHTML = data.html;
+                    } else {
+                        // Afficher un message d'erreur
+                        searchResults.innerHTML = '<p class="error-message">' + data.message + '</p>';
+                        console.error('Erreur de recherche:', data.message);
                     }
-                } else {
+                })
+                .catch(error => {
                     loadingIndicator.style.display = 'none';
                     searchResults.innerHTML = '<p class="error-message">Erreur lors de la recherche. Veuillez réessayer.</p>';
-                }
-            };
-            
-            xhr.onerror = function() {
-                loadingIndicator.style.display = 'none';
-                searchResults.innerHTML = '<p class="error-message">Erreur de connexion. Veuillez réessayer.</p>';
-            };
-            
-            xhr.send();
+                    console.error('Erreur AJAX:', error);
+                });
         }
         
         // Événement de clic sur le bouton de recherche

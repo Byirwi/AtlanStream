@@ -1,4 +1,12 @@
 <?php
+// Activer l'affichage des erreurs pour le débogage
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Journaliser la requête pour le débogage
+error_log("Requête de recherche reçue: " . (isset($_GET['q']) ? $_GET['q'] : 'non défini'));
+
 require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/admin-auth.php';
@@ -27,6 +35,10 @@ if (empty($searchTerm)) {
 }
 
 try {
+    // Vérifier la connexion à la base de données
+    $pdo->query("SELECT 1");
+    error_log("Connexion à la base de données OK");
+    
     // Préparer la requête SQL avec recherche sur le titre et la description
     $stmt = $pdo->prepare("
         SELECT * FROM movies 
@@ -112,6 +124,16 @@ try {
         'html' => $html
     ]);
     
+} catch (PDOException $e) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erreur de base de données: ' . $e->getMessage()
+    ]);
+    
+    // Journaliser l'erreur avec plus de détails
+    error_log("Erreur PDO lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
+    exit;
 } catch (Exception $e) {
     header('Content-Type: application/json');
     echo json_encode([
@@ -120,5 +142,6 @@ try {
     ]);
     
     // Journaliser l'erreur avec plus de détails
-    error_log("Erreur lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
+    error_log("Erreur générale lors de la recherche AJAX: " . $e->getMessage() . " - Trace: " . $e->getTraceAsString());
+    exit;
 }

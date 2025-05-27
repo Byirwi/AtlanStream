@@ -188,6 +188,7 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
     <title><?= !empty($film['id']) ? 'Modifier' : 'Ajouter' ?> un film - AtlanStream Admin</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="dark">
     <header>
@@ -325,61 +326,65 @@ $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetc
                 </div>
                 
                 <div class="form-buttons" style="margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary"><?= !empty($film['id']) ? 'Mettre à jour' : 'Ajouter' ?> le film</button>
-                    <a href="admin_films.php" class="btn btn-secondary">Annuler</a>
-                </div>
-            </form>
-        </div>
-    </div>
-    
+                    <button type="submit" class="btn btn-primary"><?= !empty($film['id']) ? 'Mettre à jour' : 'Ajouter' ?> le film</button>re à jour' : 'Ajouter' ?> le film
+                    <a href="admin_films.php" class="btn btn-secondary">Annuler</a>button>
+                </div> <a href="admin_films.php" class="btn btn-secondary">
+            </form>          <i class="fas fa-times"></i> Annuler
+        </div>          </a>
+    </div>            </div>
+    </form>
     <footer>
         <p>&copy; 2025 AtlanStream - Administration</p>
     </footer>
     
-    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme.js"></script>copy; 2025 AtlanStream - Administration</p>
     <script>
         // Afficher le nom du fichier sélectionné
         function updateFileName(input) {
             const fileName = document.getElementById('fileName');
             if (input.files.length > 0) {
-                fileName.textContent = input.files[0].name;
-                
+                fileName.textContent = input.files[0].name; updateFileName(input) {
+                tElementById('fileName');
                 // Prévisualiser l'image
-                const preview = document.getElementById('preview');
+                const preview = document.getElementById('preview');.files[0].name;
                 const file = input.files[0];
-                const reader = new FileReader();
-                
+                const reader = new FileReader();// Prévisualiser l'image
+                lementById('preview');
                 reader.onload = function(e) {
-                    preview.src = e.target.result;
+                    preview.src = e.target.result;onst reader = new FileReader();
                 }
-                
-                reader.readAsDataURL(file);
+                 {
+                reader.readAsDataURL(file);preview.src = e.target.result;
             } else {
-                fileName.textContent = 'Aucun fichier sélectionné';
-            }
-        }
+                fileName.textContent = 'Aucun fichier sélectionné';   
+            }       reader.readAsDataURL(file);
+        }            } else {
 
         // Activer/désactiver l'affichage des informations de débogage
         document.addEventListener('DOMContentLoaded', function() {
             const debugInfo = document.querySelector('.debug-info');
-            if (debugInfo) {
+            if (debugInfo) {bogage
                 const toggle = document.createElement('button');
-                toggle.textContent = 'Afficher les infos de débogage';
+                toggle.textContent = 'Afficher les infos de débogage';info');
                 toggle.classList.add('btn', 'btn-secondary');
-                toggle.style.marginBottom = '15px';
-                toggle.addEventListener('click', function(e) {
+                toggle.style.marginBottom = '15px';);
+                toggle.addEventListener('click', function(e) {fficher les infos de débogage';
                     e.preventDefault();
                     if (debugInfo.style.display === 'none' || !debugInfo.style.display) {
                         debugInfo.style.display = 'block';
-                        toggle.textContent = 'Masquer les infos de débogage';
-                    } else {
+                        toggle.textContent = 'Masquer les infos de débogage';tDefault();
+                    } else {' || !debugInfo.style.display) {
                         debugInfo.style.display = 'none';
-                        toggle.textContent = 'Afficher les infos de débogage';
-                    }
+                        toggle.textContent = 'Afficher les infos de débogage';   toggle.textContent = 'Masquer les infos de débogage';
+                    } } else {
                 });
-                debugInfo.parentNode.insertBefore(toggle, debugInfo);
-            }
-        });
+                debugInfo.parentNode.insertBefore(toggle, debugInfo);           toggle.textContent = 'Afficher les infos de débogage';
+            }         }
+        });   });
+    </script>         debugInfo.parentNode.insertBefore(toggle, debugInfo);
+</body>     }
+
+</html>        });
     </script>
 </body>
 </html>

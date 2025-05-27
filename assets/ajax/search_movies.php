@@ -20,14 +20,47 @@ try {
     
     // Récupérer le terme de recherche
     $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
-    if (empty($searchTerm)) {
-        throw new Exception("Veuillez entrer un terme de recherche");
+    
+    // Récupérer les catégories sélectionnées
+    $selectedCategories = [];
+    if (isset($_GET['categories'])) {
+        $selectedCategories = array_map('intval', explode(',', $_GET['categories']));
     }
     
-    // Requête de recherche simplifiée
-    $stmt = $pdo->prepare("SELECT * FROM movies WHERE title LIKE ? ORDER BY id DESC LIMIT 20");
-    $stmt->execute(['%' . $searchTerm . '%']);
+    // Construire la requête SQL en fonction des filtres
+    if (!empty($selectedCategories)) {
+        // Recherche avec filtres de catégorie
+        $sql = "SELECT DISTINCT m.* FROM movies m 
+                JOIN movie_categories mc ON m.id = mc.movie_id 
+                WHERE m.title LIKE ? AND mc.category_id IN (" . implode(',', array_fill(0, count($selectedCategories), '?')) . ") 
+                ORDER BY m.id DESC LIMIT 50";
+        
+        $params = array_merge(['%' . $searchTerm . '%'], $selectedCategories);
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+    } else {
+        // Recherche simple sans filtres de catégorie
+        $stmt = $pdo->prepare("SELECT * FROM movies WHERE title LIKE ? ORDER BY id DESC LIMIT 20");
+        $stmt->execute(['%' . $searchTerm . '%']);
+    }
+    
     $movies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Pour chaque film, récupérer les catégories associées
+    foreach ($movies as &$movie) {
+        $stmtCategories = $pdo->prepare("
+            SELECT c.name, c.id
+            FROM categories c
+            JOIN movie_categories mc ON c.id = mc.category_id
+            WHERE mc.movie_id = ?
+            ORDER BY c.name
+        ");
+        $stmtCategories->execute([$movie['id']]);
+        $categories = $stmtCategories->fetchAll(PDO::FETCH_ASSOC);
+        $movie['categories'] = $categories;
+    }
+    unset($movie);
     
     // Générer une réponse HTML
     $html = '';
@@ -74,7 +107,18 @@ try {
             }
             
             $html .= '<p>' . htmlspecialchars($movie['description']) . '</p>';
-            $html .= '<span class="movie-category">Film</span>';
+            
+            // Afficher les catégories
+            if (!empty($movie['categories'])) {
+                $html .= '<div class="movie-categories">';
+                foreach ($movie['categories'] as $category) {
+                    $html .= '<span class="movie-category">' . htmlspecialchars($category['name']) . '</span>';
+                }
+                $html .= '</div>';
+            } else {
+                $html .= '<span class="movie-category">Non catégorisé</span>';
+            }
+            
             $html .= '</div>'; // End movie-info
             $html .= '</div>'; // End movie-card
         }

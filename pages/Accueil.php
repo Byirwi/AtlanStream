@@ -20,6 +20,7 @@ require_once '../includes/admin-auth.php';
                 <?php if (isLoggedIn()): ?>
                     <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                     <li><a href="catalogue.php">Catalogue</a></li>
+                    <li><a href="favoris.php">Mes Favoris</a></li>
                     <li><a href="compte.php">Mon compte</a></li>
                     <?php if (isAdmin()): ?>
                         <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>

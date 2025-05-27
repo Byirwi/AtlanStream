@@ -6,6 +6,15 @@ require_once '../includes/admin-auth.php';
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();
 
+// Récupérer toutes les catégories pour les filtres
+try {
+    $categoriesStmt = $pdo->query("SELECT id, name FROM categories ORDER BY name");
+    $allCategories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $allCategories = [];
+    error_log("Erreur lors de la récupération des catégories: " . $e->getMessage());
+}
+
 // Récupérer les films depuis la base de données
 try {
     // Récupérer les films de base
@@ -79,12 +88,36 @@ try {
         <div class="catalogue-header">
             <h2>Catalogue des films</h2>
             <p>Découvrez notre sélection de films sur l'Atlantide</p>
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="search-input" class="search-input" placeholder="Rechercher un film...">
-                    <button id="search-button" class="search-button">Rechercher</button>
+            
+            <!-- Système de recherche et filtres -->
+            <div class="filter-container">
+                <!-- Recherche par texte -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Rechercher un film...">
+                        <button id="search-button" class="search-button">Rechercher</button>
+                    </div>
+                </div>
+                
+                <!-- Filtres par catégorie -->
+                <div class="category-filters">
+                    <h3>Filtrer par catégorie</h3>
+                    <div class="category-filter-list">
+                        <div class="category-filter-item">
+                            <input type="checkbox" id="cat-all" class="category-filter" value="all" checked>
+                            <label for="cat-all">Toutes les catégories</label>
+                        </div>
+                        <?php foreach ($allCategories as $category): ?>
+                        <div class="category-filter-item">
+                            <input type="checkbox" id="cat-<?= $category['id'] ?>" class="category-filter" value="<?= $category['id'] ?>">
+                            <label for="cat-<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></label>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button id="apply-filters" class="btn btn-secondary">Appliquer les filtres</button>
                 </div>
             </div>
+            
             <?php if (isAdmin()): ?>
                 <a href="admin/admin_edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
             <?php endif; ?>
@@ -149,28 +182,86 @@ try {
     
     <script src="../assets/js/theme.js"></script>
     
-    <!-- Script pour la recherche AJAX -->
+    <!-- Script pour la recherche AJAX et les filtres -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
         const searchResults = document.getElementById('search-results');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        const allCategoriesCheckbox = document.getElementById('cat-all');
         
-        // Fonction pour effectuer la recherche
+        // Gérer la sélection de "Toutes les catégories"
+        allCategoriesCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                categoryFilters.forEach(checkbox => {
+                    if (checkbox.value !== 'all') {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    }
+                });
+            } else {
+                categoryFilters.forEach(checkbox => {
+                    if (checkbox.value !== 'all') {
+                        checkbox.disabled = false;
+                    }
+                });
+            }
+        });
+        
+        // Gérer la sélection des catégories individuelles
+        categoryFilters.forEach(checkbox => {
+            if (checkbox.value !== 'all') {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        allCategoriesCheckbox.checked = false;
+                    }
+                    
+                    // Si aucune catégorie n'est sélectionnée, cocher "Toutes les catégories"
+                    const anyCategorySelected = Array.from(categoryFilters).some(
+                        cb => cb.value !== 'all' && cb.checked
+                    );
+                    
+                    if (!anyCategorySelected) {
+                        allCategoriesCheckbox.checked = true;
+                        categoryFilters.forEach(cb => {
+                            if (cb.value !== 'all') {
+                                cb.disabled = true;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Fonction pour effectuer la recherche avec filtres
         function performSearch() {
             const searchTerm = searchInput.value.trim();
+            const selectedCategories = [];
             
-            // Ne rien faire si la recherche est vide
-            if (searchTerm === '') {
-                return;
+            // Ne pas filtrer par catégorie si "Toutes les catégories" est sélectionné
+            if (!allCategoriesCheckbox.checked) {
+                categoryFilters.forEach(checkbox => {
+                    if (checkbox.checked && checkbox.value !== 'all') {
+                        selectedCategories.push(checkbox.value);
+                    }
+                });
             }
             
             // Afficher l'indicateur de chargement
             loadingIndicator.style.display = 'block';
             
-            // Utiliser le fichier de recherche principal
-            fetch('../assets/ajax/search_movies.php?q=' + encodeURIComponent(searchTerm))
+            // Construire l'URL avec les paramètres
+            let searchUrl = '../assets/ajax/search_movies.php?q=' + encodeURIComponent(searchTerm);
+            
+            if (selectedCategories.length > 0) {
+                searchUrl += '&categories=' + selectedCategories.join(',');
+            }
+            
+            // Requête AJAX
+            fetch(searchUrl)
                 .then(response => {
                     console.log('Réponse reçue:', response);
                     if (!response.ok) {
@@ -200,6 +291,9 @@ try {
         
         // Événement de clic sur le bouton de recherche
         searchButton.addEventListener('click', performSearch);
+        
+        // Événement pour appliquer les filtres
+        applyFiltersBtn.addEventListener('click', performSearch);
         
         // Événement de touche Entrée dans le champ de recherche
         searchInput.addEventListener('keypress', function(e) {

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($film['title']) ?> - AtlanStream</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/rating.css">
     <style>
         .film-detail {
             max-width: 1000px;
@@ -134,7 +135,18 @@
                     <img src="<?= $posterPath ?>" alt="<?= htmlspecialchars($film['title']) ?>">
                 </div>
                 <div class="film-info">
-                    <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
+                    <div class="film-title-row">
+                        <h1 class="film-title"><?= htmlspecialchars($film['title']) ?></h1>
+                        
+                        <!-- Bouton favoris -->
+                        <?php $isFavorite = isInFavorites($film['id'], $_SESSION['user_id'] ?? 0, $pdo); ?>
+                        <button class="favorite-btn <?= $isFavorite ? 'is-favorite' : '' ?>" 
+                                data-movie-id="<?= $film['id'] ?>"
+                                title="<?= $isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>">
+                            <span class="favorite-icon">❤</span>
+                        </button>
+                    </div>
+                    
                     <div class="film-meta">
                         <?php if (!empty($film['year'])): ?>
                         <div class="film-meta-item">
@@ -151,6 +163,19 @@
                         <?php if (!empty($film['director'])): ?>
                         <div class="film-meta-item">
                             <span>🎬</span> Réalisé par <?= htmlspecialchars($film['director']) ?>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <!-- Affichage de la note moyenne -->
+                        <?php $rating = getMovieRating($film['id'], $pdo); ?>
+                        <?php if ($rating['count'] > 0): ?>
+                        <div class="film-meta-item film-rating">
+                            <div class="stars">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?= ($i <= round($rating['average'])) ? 'filled' : '' ?>">★</span>
+                                <?php endfor; ?>
+                            </div>
+                            <span><?= $rating['average'] ?>/5 (<?= $rating['count'] ?> votes)</span>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -177,6 +202,21 @@
                 </div>
             </div>
             
+            <!-- Système de notation pour l'utilisateur connecté -->
+            <div class="user-rating">
+                <h3>Votre note</h3>
+                <form action="../../assets/ajax/rate_movie.php" method="post" class="rating-form" data-movie-id="<?= $film['id'] ?>">
+                    <div class="rating-stars">
+                        <?php for ($i = 5; $i >= 1; $i--): ?>
+                            <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" />
+                            <label for="star<?= $i ?>" title="<?= $i ?> étoiles">★</label>
+                        <?php endfor; ?>
+                    </div>
+                    <button type="submit" class="rate-btn">Noter</button>
+                </form>
+                <div class="rating-message"></div>
+            </div>
+            
             <a href="../../pages/catalogue.php" class="back-button">Retour au catalogue</a>
         </div>
     </main>
@@ -186,5 +226,7 @@
     </footer>
     
     <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/rating.js"></script>
+    <script src="../../assets/js/favorites.js"></script>
 </body>
 </html>

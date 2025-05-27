@@ -1285,29 +1285,36 @@ footer {
     }
 }
 
-/* Menu mobile hamburger */
+/* Menu mobile hamburger - version améliorée */
 .mobile-menu-toggle {
     display: none;
     flex-direction: column;
     justify-content: space-between;
-    width: 40px;
-    height: 30px;
+    width: 44px;
+    height: 34px;
     cursor: pointer;
     z-index: 1000;
     position: absolute;
-    top: 15px;
+    top: 12px;
     right: 15px;
-    background-color: rgba(var(--primary-color-rgb), 0.2);
+    background-color: rgba(var(--primary-color-rgb), 0.15);
     padding: 10px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .mobile-menu-toggle:hover {
-    background-color: rgba(var(--primary-color-rgb), 0.3);
+    background-color: rgba(var(--primary-color-rgb), 0.25);
     transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu-toggle span {
@@ -1315,8 +1322,9 @@ footer {
     width: 100%;
     height: 3px;
     background-color: var(--primary-color);
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    transform-origin: center;
 }
 
 .mobile-nav {
@@ -1327,42 +1335,43 @@ footer {
     right: 0;
     bottom: 0;
     background-color: var(--dark-bg);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 999;
-    padding: 80px 25px 30px;
+    padding: 80px 30px 40px;
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
     transform: translateY(-100%);
-    transition: transform 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: var(--shadow-strong);
 }
 
 .mobile-nav.active {
     transform: translateY(0);
-    animation: fadeInMenu 0.4s ease;
+    animation: fadeInMenu 0.5s ease;
 }
 
 @keyframes fadeInMenu {
-    from { opacity: 0.7; }
-    to { opacity: 1; }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 
 .mobile-nav ul {
     list-style: none;
     width: 100%;
     padding: 0;
-    max-width: 320px;
+    max-width: 340px;
     margin: 0 auto;
 }
 
 .mobile-nav ul li {
-    margin: 15px 0;
+    margin: 12px 0;
     text-align: center;
     opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.4s ease;
-    transition-delay: calc(0.08s * var(--item-index, 0));
+    transform: translateY(25px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(0.07s * var(--item-index, 0));
 }
 
 .mobile-nav.active ul li {
@@ -1376,45 +1385,55 @@ footer {
     font-size: 1.3rem;
     font-weight: 600;
     color: var(--light-text);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(var(--primary-color-rgb), 0.05);
     margin: 0 5px;
+    background-image: linear-gradient(to right, transparent 50%, rgba(var(--primary-color-rgb), 0.1) 50%);
+    background-size: 200% 100%;
+    background-position: 0 0;
+}
+
+.mobile-nav ul li a:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .mobile-nav ul li a::before {
     content: '';
     position: absolute;
     left: 50%;
-    bottom: 5px;
+    bottom: 6px;
     width: 0;
     height: 3px;
     background-color: var(--primary-color);
     transition: all 0.3s ease;
     transform: translateX(-50%);
+    border-radius: 3px;
 }
 
 .mobile-nav ul li a:hover::before {
-    width: 60%;
+    width: 70%;
 }
 
 .mobile-nav ul li a:hover,
 .mobile-nav ul li a:active {
     color: var(--primary-color);
-    background-color: rgba(var(--primary-color-rgb), 0.1);
-    transform: scale(1.05);
+    background-position: -100% 0;
+    transform: translateY(-3px) scale(1.03);
     letter-spacing: 0.5px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-nav .welcome-user {
-    margin: 5px 0 20px;
+    margin: 10px 0 25px;
     font-size: 1.2rem;
-    padding: 12px 20px;
+    padding: 14px 24px;
     background-color: rgba(var(--primary-color-rgb), 0.15);
-    border-radius: 12px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1422,6 +1441,14 @@ footer {
     gap: 8px;
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.mobile-nav .welcome-user:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background-color: rgba(var(--primary-color-rgb), 0.2);
 }
 
 .mobile-nav .theme-toggle {
@@ -1429,53 +1456,93 @@ footer {
     transform: scale(1.2);
     background-color: rgba(var(--primary-color-rgb), 0.15);
     border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav .theme-toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.mobile-nav .theme-toggle:active::after {
+    width: 120px;
+    height: 120px;
 }
 
 .mobile-nav .logout-btn {
     display: block;
-    margin-top: 25px;
-    padding: 15px 30px;
+    margin-top: 30px;
+    padding: 16px 36px;
     background-color: rgba(229, 62, 62, 0.15);
     color: #e53e3e;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 1.2rem;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     font-weight: 600;
     border: 1px solid rgba(229, 62, 62, 0.2);
     box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav .logout-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(229, 62, 62, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
 }
 
 .mobile-nav .logout-btn:hover {
-    background-color: rgba(229, 62, 62, 0.3);
-    transform: scale(1.05);
+    background-color: rgba(229, 62, 62, 0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(229, 62, 62, 0.15);
+}
+
+.mobile-nav .logout-btn:hover::before {
+    transform: translateX(100%);
 }
 
 /* Style for the mobile toggle menu when open */
 .mobile-menu-toggle.active {
     background-color: rgba(229, 62, 62, 0.15);
     border-color: rgba(229, 62, 62, 0.3);
+    transform: rotate(1deg);
 }
 
 .mobile-menu-toggle.active span:nth-child(1) {
-    transform: translateY(10px) rotate(45deg);
+    transform: translateY(12px) rotate(45deg);
     background-color: #e53e3e;
     width: 100%;
 }
 
 .mobile-menu-toggle.active span:nth-child(2) {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-100%);
 }
 
 .mobile-menu-toggle.active span:nth-child(3) {
-    transform: translateY(-10px) rotate(-45deg);
+    transform: translateY(-12px) rotate(-45deg);
     background-color: #e53e3e;
     width: 100%;
 }
 
 /* Light theme adjustments for mobile nav */
 .light .mobile-nav {
-    background-color: rgba(255, 255, 255, 0.97);
+    background-color: rgba(255, 255, 255, 0.98);
     border-left: 1px solid rgba(79, 209, 197, 0.1);
 }
 
@@ -1486,6 +1553,11 @@ footer {
 
 .light .mobile-menu-toggle:hover {
     background-color: rgba(79, 209, 197, 0.3);
+    box-shadow: 0 4px 10px rgba(79, 209, 197, 0.2);
+}
+
+.light .mobile-menu-toggle:focus {
+    box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.3);
 }
 
 .light .mobile-menu-toggle span {
@@ -1502,89 +1574,23 @@ footer {
     border: 1px solid rgba(79, 209, 197, 0.3);
 }
 
+.light .mobile-nav .welcome-user:hover {
+    background-color: rgba(79, 209, 197, 0.25);
+    box-shadow: 0 6px 15px rgba(79, 209, 197, 0.15);
+}
+
 .light .mobile-nav ul li a {
     border: 1px solid rgba(79, 209, 197, 0.1);
     background-color: white;
+    background-image: linear-gradient(to right, transparent 50%, rgba(79, 209, 197, 0.1) 50%);
 }
 
 .light .mobile-nav ul li a:hover,
 .light .mobile-nav ul li a:active {
     background-color: var(--soft-aqua-light);
+    box-shadow: 0 6px 15px rgba(79, 209, 197, 0.15);
 }
 
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-    .mobile-menu-toggle {
-        display: flex;
-    }
-    
-    header {
-        position: relative;
-        padding: 15px 20px;
-        justify-content: center;
-    }
-    
-    header nav {
-        display: none; /* Hide desktop nav */
-    }
-    
-    .logo {
-        margin: 0 auto;
-        text-align: center;
-    }
-    
-    .logo h1 {
-        font-size: 1.8rem;
-    }
-    
-    .mobile-nav {
-        display: flex;
-    }
-    
-    /* Fix for scrolling when mobile menu is open */
-    body.menu-open {
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .mobile-nav ul li a {
-        font-size: 1.2rem;
-        padding: 14px 0;
-    }
-    
-    .mobile-nav .welcome-user {
-        font-size: 1.1rem;
-        padding: 10px 15px;
-    }
-    
-    .mobile-menu-toggle {
-        width: 35px;
-        height: 26px;
-        top: 12px;
-        right: 12px;
-        padding: 8px;
-    }
-}
-
-@media (max-width: 360px) {
-    .logo h1 {
-        font-size: 1.5rem;
-    }
-    
-    .mobile-nav ul li {
-        margin: 10px 0;
-    }
-    
-    .mobile-nav ul li a {
-        font-size: 1.1rem;
-        padding: 12px 0;
-    }
-    
-    .mobile-nav .logout-btn {
-        padding: 12px 25px;
-    }
+.light .mobile-nav ul li a:focus {
+    box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.3);
 }

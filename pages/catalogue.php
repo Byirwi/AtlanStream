@@ -57,30 +57,20 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtlanStream - Catalogue</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/mobile.css">
-    <link rel="stylesheet" href="../assets/css/animated-menu.css">
 </head>
 <body class="dark">
-    <!-- Animation de chargement -->
-    <div class="loading-screen">
-        <div class="loading-indicator"></div>
-    </div>
-
     <header>
         <div class="logo">
             <h1>AtlanStream</h1>
         </div>
-        
-        <!-- Navigation desktop animée -->
-        <nav class="desktop-menu">
+        <nav>
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                 <li><a href="favoris.php">Mes Favoris</a></li>
                 <li><a href="compte.php">Mon compte</a></li>
                 <?php if (isAdmin()): ?>
-                    <li>
-                        <a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                    <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
                         <ul class="admin-dropdown">
                             <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
                             <li><a href="admin/admin_films.php">Gérer les films</a></li>
@@ -98,15 +88,12 @@ try {
             </ul>
         </nav>
         
-        <!-- Hamburger pour menu mobile - nouvelle version -->
-        <button class="mobile-menu-toggle" aria-label="Menu">
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </button>
+        <!-- Hamburger pour menu mobile -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
     
     <!-- Navigation mobile -->
@@ -246,7 +233,6 @@ try {
     
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/mobile-menu.js"></script>
-    <script src="../assets/js/animated-menu.js"></script>
     
     <!-- Script pour la recherche AJAX et les filtres -->
     <script>

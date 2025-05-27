@@ -417,6 +417,33 @@ nav ul li a:hover {
     transform: none !important;
 }
 
+/* Ajouter un lien "Voir détails" au survol */
+.movie-poster .view-details {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%) translateY(50px);
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2;
+    text-decoration: none;
+}
+
+.movie-card:hover .movie-poster .view-details {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.view-details:hover {
+    background-color: var(--primary-color-hover);
+}
+
 .movie-info {
     padding: 20px;
     position: relative;

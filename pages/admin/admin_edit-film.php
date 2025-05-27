@@ -2,6 +2,7 @@
 require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/admin-auth.php';
+require_once '../../includes/film_functions.php';
 
 // Activer l'affichage des erreurs pour le débogage
 // error_reporting(E_ALL);
@@ -152,6 +153,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Valider la transaction
                 $pdo->commit();
+                
+                // Générer la page HTML du film
+                if (generateFilmPage($movieId, $pdo)) {
+                    $success .= " Page HTML générée.";
+                } else {
+                    $success .= " Note: Impossible de générer la page HTML.";
+                }
                 
                 $_SESSION['success'] = $success;
                 header("Location: admin_films.php");

@@ -103,14 +103,20 @@ try {
                             <a href="admin/admin_films.php?delete=<?= $movie['id'] ?>" class="delete-btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce film?')">🗑️</a>
                         </div>
                     <?php endif; ?>
-                    <!-- Ajout d'un identifiant de débogage pour chaque carte -->
                     <div class="movie-poster">
                         <?php 
                         $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../public/images/' . $movie['poster_url']) 
                             ? '../public/images/' . $movie['poster_url'] 
                             : '../public/images/default.jpg';
+                        
+                        // Vérifier si la page de détail existe
+                        $detailPage = '../public/films/film_' . $movie['id'] . '.html';
+                        $detailExists = file_exists(__DIR__ . '/' . $detailPage);
                         ?>
                         <img src="<?= $poster ?>" alt="<?= htmlspecialchars($movie['title']) ?>">
+                        <?php if ($detailExists): ?>
+                            <a href="<?= $detailPage ?>" class="view-details">Voir détails</a>
+                        <?php endif; ?>
                     </div>
                     <div class="movie-info">
                         <h3><?= htmlspecialchars($movie['title']) ?></h3>

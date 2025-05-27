@@ -92,7 +92,10 @@ try {
         
         <div class="admin-actions">
             <h3>Actions rapides</h3>
-            <p><a href="admin_edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a></p>
+            <p>
+                <a href="admin_edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
+                <a href="generate_all_pages.php" class="btn btn-secondary" onclick="return confirm('Générer des pages HTML pour tous les films existants?')">Générer toutes les pages HTML</a>
+            </p>
         </div>
     </div>
     

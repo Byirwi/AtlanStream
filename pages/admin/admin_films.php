@@ -2,6 +2,7 @@
 require_once '../../includes/session.php';
 require_once '../../config/db_connect.php';
 require_once '../../includes/admin-auth.php';
+require_once '../../includes/film_functions.php';
 
 // Vérification des droits admin
 redirectIfNotAdmin();
@@ -23,6 +24,9 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
         
         // Valider la transaction
         $pdo->commit();
+        
+        // Supprimer la page HTML associée
+        deleteFilmPage($id);
         
         $_SESSION['success'] = "Film supprimé avec succès.";
     } catch (Exception $e) {

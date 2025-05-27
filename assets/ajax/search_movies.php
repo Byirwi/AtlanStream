@@ -48,8 +48,17 @@ try {
                 ? '../../public/images/' . $movie['poster_url'] 
                 : '../../public/images/default.jpg';
             
+            // Vérifier si la page de détail existe
+            $detailPage = '../../public/films/film_' . $movie['id'] . '.html';
+            $detailExists = file_exists(__DIR__ . '/../' . $detailPage);
+            
             $html .= '<div class="movie-poster">';
             $html .= '<img src="' . $poster . '" alt="' . htmlspecialchars($movie['title']) . '">';
+            
+            if ($detailExists) {
+                $html .= '<a href="' . $detailPage . '" class="view-details">Voir détails</a>';
+            }
+            
             $html .= '</div>';
             
             // Movie info

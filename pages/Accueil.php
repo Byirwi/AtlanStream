@@ -56,13 +56,14 @@ require_once '../includes/admin-auth.php';
     <!-- Navigation mobile -->
     <nav class="mobile-nav">
         <ul>
+            <?php $menuIndex = 0; // Pour l'animation en cascade ?>
             <?php if (isLoggedIn()): ?>
-                <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                <li><a href="catalogue.php">Catalogue</a></li>
-                <li><a href="favoris.php">Mes Favoris</a></li>
-                <li><a href="compte.php">Mon compte</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="catalogue.php">Catalogue</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="favoris.php">Mes Favoris</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="compte.php">Mon compte</a></li>
                 <?php if (isAdmin()): ?>
-                    <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
                         <ul class="admin-dropdown">
                             <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
                             <li><a href="admin/admin_films.php">Gérer les films</a></li>
@@ -71,12 +72,12 @@ require_once '../includes/admin-auth.php';
                         </ul>
                     </li>
                 <?php endif; ?>
-                <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="logout.php" class="logout-btn">Déconnexion</a></li>
             <?php else: ?>
-                <li><a href="login.php">Connexion</a></li>
-                <li><a href="register.php">Inscription</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="login.php">Connexion</a></li>
+                <li style="--item-index: <?= $menuIndex++ ?>"><a href="register.php">Inscription</a></li>
             <?php endif; ?>
-            <li>
+            <li style="--item-index: <?= $menuIndex++ ?>">
                 <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
                     <span id="mobile-theme-icon">☀️</span>
                 </button>

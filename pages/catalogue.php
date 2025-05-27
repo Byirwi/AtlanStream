@@ -36,26 +36,6 @@ try {
     error_log("Erreur lors de la récupération des films: " . $e->getMessage());
 }
 
-// Si aucun film n'a été trouvé ou en cas d'erreur, créer des exemples statiques
-if (empty($movies)) {
-    $movies = [
-        [
-            'id' => 1,
-            'title' => 'La Cité Perdue',
-            'description' => 'Un explorateur découvre les vestiges d\'une civilisation sous-marine avancée.',
-            'poster_url' => 'default.jpg',
-            'categories' => ['Aventure', 'Science-Fiction']
-        ],
-        [
-            'id' => 2,
-            'title' => 'Les Secrets d\'Atlantis',
-            'description' => 'Une équipe de scientifiques révèle les mystères de la technologie atlante.',
-            'poster_url' => 'default.jpg',
-            'categories' => ['Documentaire']
-        ],
-        // Ajoutez d'autres films statiques si nécessaire
-    ];
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr">

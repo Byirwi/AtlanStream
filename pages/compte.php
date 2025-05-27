@@ -72,19 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Changement de mot de passe
     if (isset($_POST['update_password'])) {
-        $currentPassword = $_POST['current_password'];
         $newPassword = $_POST['new_password'];
         $confirmPassword = $_POST['confirm_password'];
 
-        // Vérifier le mot de passe actuel
+        // Vérification du nouveau mot de passe
         try {
-            $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
-            $stmt->execute([$userId]);
-            $hash = $stmt->fetchColumn();
-
-            if (!password_verify($currentPassword, $hash)) {
-                $error = "Mot de passe actuel incorrect.";
-            } elseif (strlen($newPassword) < 6) {
+            if (strlen($newPassword) < 6) {
                 $error = "Le nouveau mot de passe doit comporter au moins 6 caractères.";
             } elseif ($newPassword !== $confirmPassword) {
                 $error = "Les nouveaux mots de passe ne correspondent pas.";
@@ -162,10 +155,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             <form method="post">
                 <h3>Changer le mot de passe</h3>
-                <div class="form-group">
-                    <label for="current_password">Mot de passe actuel</label>
-                    <input type="password" id="current_password" name="current_password" required>
-                </div>
                 <div class="form-group">
                     <label for="new_password">Nouveau mot de passe</label>
                     <input type="password" id="new_password" name="new_password" required>

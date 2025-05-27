@@ -5,6 +5,7 @@ require_once '../../includes/film_functions.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isLoggedIn()) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'Vous devez être connecté pour gérer vos favoris'
@@ -14,6 +15,7 @@ if (!isLoggedIn()) {
 
 // Vérifier si la requête est une requête POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'Méthode non autorisée'
@@ -28,6 +30,7 @@ $userId = $_SESSION['user_id'];
 
 // Valider les données
 if ($movieId <= 0) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'ID de film invalide'
@@ -36,6 +39,7 @@ if ($movieId <= 0) {
 }
 
 if (!in_array($action, ['add', 'remove'])) {
+    header('Content-Type: application/json');
     echo json_encode([
         'success' => false,
         'message' => 'Action invalide'
@@ -53,6 +57,7 @@ if ($action === 'add') {
     $message = 'Film retiré des favoris';
 }
 
+header('Content-Type: application/json');
 echo json_encode([
     'success' => $success,
     'message' => $success ? $message : 'Erreur lors de la gestion des favoris'

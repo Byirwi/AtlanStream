@@ -150,11 +150,35 @@ function getUserRating($filmId, $userId, $pdo) {
 }
 
 /**
+ * Récupère tous les films favoris d'un utilisateur
+ * 
+ * @param int $userId ID de l'utilisateur
+ * @param PDO $pdo Connexion PDO à la base de données
+ * @return array Liste des films favoris
+ */
+function getFavoriteMovies($userId, $pdo) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT m.*
+            FROM movies m
+            JOIN favorites f ON m.id = f.movie_id
+            WHERE f.user_id = ?
+            ORDER BY f.created_at DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("Erreur lors de la récupération des favoris: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
  * Ajoute un film aux favoris d'un utilisateur
  * 
  * @param int $filmId ID du film
  * @param int $userId ID de l'utilisateur
- * @param PDO $pdo Connexion PDO
+ * @param PDO $pdo Connexion PDO à la base de données
  * @return bool Succès de l'opération
  */
 function addToFavorites($filmId, $userId, $pdo) {
@@ -181,7 +205,7 @@ function addToFavorites($filmId, $userId, $pdo) {
  * 
  * @param int $filmId ID du film
  * @param int $userId ID de l'utilisateur
- * @param PDO $pdo Connexion PDO
+ * @param PDO $pdo Connexion PDO à la base de données
  * @return bool Succès de l'opération
  */
 function removeFromFavorites($filmId, $userId, $pdo) {
@@ -199,7 +223,7 @@ function removeFromFavorites($filmId, $userId, $pdo) {
  * 
  * @param int $filmId ID du film
  * @param int $userId ID de l'utilisateur
- * @param PDO $pdo Connexion PDO
+ * @param PDO $pdo Connexion PDO à la base de données
  * @return bool Le film est dans les favoris
  */
 function isInFavorites($filmId, $userId, $pdo) {
@@ -210,30 +234,6 @@ function isInFavorites($filmId, $userId, $pdo) {
     } catch (Exception $e) {
         error_log("Erreur lors de la vérification des favoris: " . $e->getMessage());
         return false;
-    }
-}
-
-/**
- * Récupère tous les films favoris d'un utilisateur
- * 
- * @param int $userId ID de l'utilisateur
- * @param PDO $pdo Connexion PDO
- * @return array Liste des films favoris
- */
-function getFavoriteMovies($userId, $pdo) {
-    try {
-        $stmt = $pdo->prepare("
-            SELECT m.*
-            FROM movies m
-            JOIN favorites f ON m.id = f.movie_id
-            WHERE f.user_id = ?
-            ORDER BY f.created_at DESC
-        ");
-        $stmt->execute([$userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        error_log("Erreur lors de la récupération des favoris: " . $e->getMessage());
-        return [];
     }
 }
 ?>

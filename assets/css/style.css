@@ -740,6 +740,22 @@ footer {
     background: linear-gradient(to bottom, transparent 60%, rgba(45, 55, 72, 0.8) 100%);
 }
 
+/* Style spécifique pour .catalogue-header en mode sombre */
+.dark .catalogue-header {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(to right, rgba(56, 178, 172, 0.15), rgba(35, 78, 82, 0.2));
+    border-bottom: 1px solid rgba(56, 178, 172, 0.2);
+}
+
+.dark .catalogue-header h2 {
+    color: var(--primary-color);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .catalogue-header p {
+    color: var(--gray-text);
+}
+
 /* Styles pour le menu déroulant admin */
 .admin-dropdown-toggle {
     position: relative;

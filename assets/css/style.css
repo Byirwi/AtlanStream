@@ -353,7 +353,6 @@ nav ul li a:hover {
 }
 
 .catalogue-header p {
-    color: var(--gray-text);
     font-size: 1.2rem;
     max-width: 600px;
     margin: 0 auto;

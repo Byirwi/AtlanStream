@@ -2,6 +2,7 @@
 require_once '../includes/session.php';
 require_once '../config/db_connect.php';
 require_once '../includes/admin-auth.php';
+require_once '../includes/film_functions.php'; // Ajout de l'inclusion du fichier contenant getMovieRating()
 
 // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
 redirectIfNotLoggedIn();

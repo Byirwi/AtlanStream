@@ -67,6 +67,7 @@ try {
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                <li><a href="favoris.php">Mes Favoris</a></li>
                 <li><a href="compte.php">Mon compte</a></li>
                 <?php if (isAdmin()): ?>
                     <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>

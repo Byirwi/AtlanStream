@@ -110,6 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><a href="catalogue.php">Catalogue</a></li>
+                <li><a href="favoris.php">Mes Favoris</a></li>
                 <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
                 <?php if (isAdmin()): ?>
                     <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>

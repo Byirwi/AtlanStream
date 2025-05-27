@@ -44,17 +44,6 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtlanStream - Catalogue</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        .movie-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 15px;
-        }
-        .movie-category {
-            margin: 0;
-        }
-    </style>
 </head>
 <body class="dark">
     <header>
@@ -90,12 +79,22 @@ try {
         <div class="catalogue-header">
             <h2>Catalogue des films</h2>
             <p>Découvrez notre sélection de films sur l'Atlantide</p>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="search-input" class="search-input" placeholder="Rechercher un film...">
+                    <button id="search-button" class="search-button">Rechercher</button>
+                </div>
+            </div>
             <?php if (isAdmin()): ?>
                 <a href="admin/admin_edit-film.php" class="btn btn-primary">Ajouter un nouveau film</a>
             <?php endif; ?>
         </div>
         
-        <div class="movies-grid">
+        <div class="loading" id="loading-indicator">
+            <p>Recherche en cours...</p>
+        </div>
+        
+        <div class="movies-grid" id="search-results">
             <?php foreach ($movies as $movie): ?>
                 <div class="movie-card">
                     <?php if (isAdmin()): ?>
@@ -143,6 +142,76 @@ try {
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    
+    <!-- Script pour la recherche AJAX -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const searchResults = document.getElementById('search-results');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        
+        // Fonction pour effectuer la recherche
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            
+            // Ne rien faire si la recherche est vide
+            if (searchTerm === '') {
+                return;
+            }
+            
+            // Afficher l'indicateur de chargement
+            loadingIndicator.style.display = 'block';
+            
+            // Créer une requête AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '../ajax/search_movies.php?q=' + encodeURIComponent(searchTerm), true);
+            
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Masquer l'indicateur de chargement
+                    loadingIndicator.style.display = 'none';
+                    
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        
+                        if (response.success) {
+                            // Mettre à jour les résultats de recherche
+                            searchResults.innerHTML = response.html;
+                        } else {
+                            // Afficher un message d'erreur
+                            searchResults.innerHTML = '<p class="error-message">' + response.message + '</p>';
+                        }
+                    } catch (e) {
+                        console.error('Erreur lors du parsing JSON:', e);
+                        searchResults.innerHTML = '<p class="error-message">Erreur lors du traitement de la réponse.</p>';
+                    }
+                } else {
+                    loadingIndicator.style.display = 'none';
+                    searchResults.innerHTML = '<p class="error-message">Erreur lors de la recherche. Veuillez réessayer.</p>';
+                }
+            };
+            
+            xhr.onerror = function() {
+                loadingIndicator.style.display = 'none';
+                searchResults.innerHTML = '<p class="error-message">Erreur de connexion. Veuillez réessayer.</p>';
+            };
+            
+            xhr.send();
+        }
+        
+        // Événement de clic sur le bouton de recherche
+        searchButton.addEventListener('click', performSearch);
+        
+        // Événement de touche Entrée dans le champ de recherche
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    });
+    </script>
+    
     <?php if (isAdmin()): ?>
     <script>
         // Script pour le menu déroulant admin

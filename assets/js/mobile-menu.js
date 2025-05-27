@@ -1,5 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Sélectionner les éléments du menu mobile
+    // Loader de page
+    const loadingScreen = document.querySelector('.loading-screen');
+    if (loadingScreen) {
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                loadingScreen.classList.add('hidden');
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 300);
+        });
+    }
+
+    // Éléments du menu mobile
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const mobileNav = document.querySelector('.mobile-nav');
     const mobileNavItems = document.querySelectorAll('.mobile-nav ul li');
@@ -11,7 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (mobileMenuToggle && mobileNav) {
         // Événement de clic sur le hamburger
-        mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             mobileMenuToggle.classList.toggle('active');
             mobileNav.classList.toggle('active');
             
@@ -20,15 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Fermer le menu au clic sur un lien (sauf lien admin dropdown)
-        mobileNavItems.forEach(item => {
-            const link = item.querySelector('a:not(.admin-dropdown-toggle)');
-            if (link) {
-                link.addEventListener('click', function() {
-                    mobileMenuToggle.classList.remove('active');
-                    mobileNav.classList.remove('active');
-                    document.body.classList.remove('menu-open');
-                });
-            }
+        document.querySelectorAll('.mobile-nav a:not(.admin-dropdown-toggle)').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenuToggle.classList.remove('active');
+                mobileNav.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
         });
         
         // Fermer le menu au clic en dehors
@@ -59,42 +72,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileAdminToggle && mobileAdminMenu) {
         mobileAdminToggle.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             mobileAdminMenu.classList.toggle('active');
-            
-            // Scroll vers l'élément pour s'assurer qu'il est visible
-            if (mobileAdminMenu.classList.contains('active')) {
-                setTimeout(() => {
-                    mobileAdminMenu.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 300);
-            }
         });
     }
     
     // Synchroniser le thème entre les toggles desktop et mobile
     const themeToggle = document.getElementById('theme-toggle');
     const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const mobileThemeIcon = document.getElementById('mobile-theme-icon');
     
     if (themeToggle && mobileThemeToggle) {
-        // Synchroniser les états initiaux
-        mobileThemeIcon.innerHTML = themeIcon.innerHTML;
-        
-        // Synchroniser le changement de thème depuis le toggle mobile
+        // Synchroniser les changements du toggle mobile vers desktop
         mobileThemeToggle.addEventListener('click', function() {
-            themeToggle.click(); // Déclencher le clic sur le toggle desktop
-            mobileThemeIcon.innerHTML = themeIcon.innerHTML; // Synchroniser l'icône
+            themeToggle.click();
         });
-        
-        // Mettre à jour l'icône mobile quand le thème change
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'innerHTML') {
-                    mobileThemeIcon.innerHTML = themeIcon.innerHTML;
-                }
-            });
-        });
-        
-        observer.observe(themeIcon, { attributes: true, childList: true });
     }
+    
+    // Double-tap pour éviter les délais sur mobile
+    const touchElements = document.querySelectorAll('.mobile-nav a, .mobile-nav button');
+    
+    touchElements.forEach(el => {
+        el.addEventListener('touchstart', function() {
+            this.classList.add('touch-active');
+        }, {passive: true});
+        
+        el.addEventListener('touchend', function() {
+            this.classList.remove('touch-active');
+        }, {passive: true});
+    });
 });

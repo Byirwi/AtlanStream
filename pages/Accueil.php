@@ -9,8 +9,14 @@ require_once '../includes/admin-auth.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtlanStream - Accueil</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/mobile.css">
 </head>
 <body class="dark">
+    <!-- Animation de chargement -->
+    <div class="loading-screen">
+        <div class="loading-indicator"></div>
+    </div>
+
     <header>
         <div class="logo">
             <h1>AtlanStream</h1>
@@ -45,44 +51,49 @@ require_once '../includes/admin-auth.php';
             </ul>
         </nav>
         
-        <!-- Hamburger pour menu mobile -->
-        <div class="mobile-menu-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <!-- Hamburger pour menu mobile - nouvelle version -->
+        <button class="mobile-menu-toggle" aria-label="Menu">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
     </header>
     
-    <!-- Navigation mobile -->
+    <!-- Navigation mobile - nouvelle version -->
     <nav class="mobile-nav">
-        <ul>
-            <?php $menuIndex = 0; // Pour l'animation en cascade ?>
-            <?php if (isLoggedIn()): ?>
-                <li style="--item-index: <?= $menuIndex++ ?>"><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="catalogue.php">Catalogue</a></li>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="favoris.php">Mes Favoris</a></li>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="compte.php">Mon compte</a></li>
-                <?php if (isAdmin()): ?>
-                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
-                        <ul class="admin-dropdown">
-                            <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
-                            <li><a href="admin/admin_films.php">Gérer les films</a></li>
-                            <li><a href="admin/admin_categories.php">Gérer les catégories</a></li>
-                            <li><a href="admin/admin_users.php">Gérer les utilisateurs</a></li>
-                        </ul>
-                    </li>
+        <div class="mobile-nav-container">
+            <ul>
+                <?php $menuIndex = 0; ?>
+                <?php if (isLoggedIn()): ?>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="catalogue.php">Catalogue</a></li>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="favoris.php">Mes Favoris</a></li>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="compte.php">Mon compte</a></li>
+                    <?php if (isAdmin()): ?>
+                        <li style="--item-index: <?= $menuIndex++ ?>"><a href="#" class="admin-dropdown-toggle">Admin ▾</a>
+                            <ul class="admin-dropdown">
+                                <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
+                                <li><a href="admin/admin_films.php">Gérer les films</a></li>
+                                <li><a href="admin/admin_categories.php">Gérer les catégories</a></li>
+                                <li><a href="admin/admin_users.php">Gérer les utilisateurs</a></li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+                <?php else: ?>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="login.php">Connexion</a></li>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="register.php">Inscription</a></li>
                 <?php endif; ?>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="logout.php" class="logout-btn">Déconnexion</a></li>
-            <?php else: ?>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="login.php">Connexion</a></li>
-                <li style="--item-index: <?= $menuIndex++ ?>"><a href="register.php">Inscription</a></li>
-            <?php endif; ?>
-            <li style="--item-index: <?= $menuIndex++ ?>">
-                <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
-                    <span id="mobile-theme-icon">☀️</span>
-                </button>
-            </li>
-        </ul>
+                <li style="--item-index: <?= $menuIndex++ ?>">
+                    <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
+                        <span id="mobile-theme-icon">☀️</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
     </nav>
     
     <main class="hero">
@@ -106,6 +117,7 @@ require_once '../includes/admin-auth.php';
     
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/mobile-menu.js"></script>
+    
     <?php if (isAdmin()): ?>
     <script>
         // Script pour le menu déroulant admin

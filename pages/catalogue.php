@@ -87,7 +87,40 @@ try {
                 </li>
             </ul>
         </nav>
+        
+        <!-- Hamburger pour menu mobile -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
+    
+    <!-- Navigation mobile -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><a href="Accueil.php">Accueil</a></li>
+            <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+            <li><a href="favoris.php">Mes Favoris</a></li>
+            <li><a href="compte.php">Mon compte</a></li>
+            <?php if (isAdmin()): ?>
+                <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                    <ul class="admin-dropdown">
+                        <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
+                        <li><a href="admin/admin_films.php">Gérer les films</a></li>
+                        <li><a href="admin/admin_categories.php">Gérer les catégories</a></li>
+                        <li><a href="admin/admin_users.php">Gérer les utilisateurs</a></li>
+                    </ul>
+                </li>
+            <?php endif; ?>
+            <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+            <li>
+                <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
+                    <span id="mobile-theme-icon">☀️</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
     
     <main>
         <div class="catalogue-header">
@@ -199,6 +232,7 @@ try {
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/mobile-menu.js"></script>
     
     <!-- Script pour la recherche AJAX et les filtres -->
     <script>
@@ -287,7 +321,7 @@ try {
                     }
                     return response.json();
                 })
-                .then(data => {
+                .then data => {
                     console.log('Données reçues:', data);
                     loadingIndicator.style.display = 'none';
                     

@@ -61,7 +61,28 @@ try {
                 </li>
             </ul>
         </nav>
+        
+        <!-- Hamburger pour menu mobile -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
+    
+    <!-- Navigation mobile -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username'] ?? 'Inconnu'); ?></span></li>
+            <li><a href="../Accueil.php">Voir le site</a></li>
+            <li><a href="../logout.php" class="logout-btn">Déconnexion</a></li>
+            <li>
+                <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
+                    <span id="mobile-theme-icon">☀️</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
     
     <div class="admin-container">
         <div class="admin-header">
@@ -104,5 +125,6 @@ try {
     </footer>
     
     <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/mobile-menu.js"></script>
 </body>
 </html>

@@ -44,7 +44,45 @@ require_once '../includes/admin-auth.php';
                 </li>
             </ul>
         </nav>
+        
+        <!-- Hamburger pour menu mobile -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
+    
+    <!-- Navigation mobile -->
+    <nav class="mobile-nav">
+        <ul>
+            <?php if (isLoggedIn()): ?>
+                <li><span class="welcome-user">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span></li>
+                <li><a href="catalogue.php">Catalogue</a></li>
+                <li><a href="favoris.php">Mes Favoris</a></li>
+                <li><a href="compte.php">Mon compte</a></li>
+                <?php if (isAdmin()): ?>
+                    <li><a href="#" class="admin-dropdown-toggle">Admin <span>▼</span></a>
+                        <ul class="admin-dropdown">
+                            <li><a href="admin/admin_dashboard.php">Tableau de bord</a></li>
+                            <li><a href="admin/admin_films.php">Gérer les films</a></li>
+                            <li><a href="admin/admin_categories.php">Gérer les catégories</a></li>
+                            <li><a href="admin/admin_users.php">Gérer les utilisateurs</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+                <li><a href="logout.php" class="logout-btn">Déconnexion</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Connexion</a></li>
+                <li><a href="register.php">Inscription</a></li>
+            <?php endif; ?>
+            <li>
+                <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
+                    <span id="mobile-theme-icon">☀️</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
     
     <main class="hero">
         <div class="hero-content">
@@ -66,6 +104,7 @@ require_once '../includes/admin-auth.php';
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/mobile-menu.js"></script>
     <?php if (isAdmin()): ?>
     <script>
         // Script pour le menu déroulant admin

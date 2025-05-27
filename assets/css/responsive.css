@@ -1,0 +1,140 @@
+/* Styles spécifiques pour améliorer la responsivité */
+
+/* Empêcher le défilement du body quand le menu mobile est ouvert */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* Optimisation pour les appareils très petits */
+@media (max-width: 360px) {
+    .logo h1 {
+        font-size: 1.4rem;
+    }
+    
+    .mobile-menu-toggle {
+        width: 25px;
+        height: 18px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .mobile-nav ul li a {
+        font-size: 1.1rem;
+        padding: 10px 0;
+    }
+    
+    .hero-content h2 {
+        font-size: 1.6rem;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .movies-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+    
+    .login-form, .register-form {
+        padding: 20px 15px;
+    }
+    
+    .search-button {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .category-filter-list {
+        max-height: 150px;
+    }
+}
+
+/* Optimisations pour les tablettes */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    
+    .film-header {
+        flex-direction: row;
+        gap: 20px;
+    }
+    
+    .film-poster img {
+        width: 220px;
+    }
+}
+
+/* Adaptation des formulaires administratifs */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .checkbox-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .admin-actions a {
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    .poster-preview {
+        max-width: 150px;
+    }
+    
+    /* Optimisation des tableaux admin sur mobile */
+    .admin-container table th, 
+    .admin-container table td {
+        padding: 8px;
+    }
+    
+    .admin-container table .poster-thumb {
+        width: 40px;
+        height: 56px;
+    }
+    
+    .actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .actions a {
+        text-align: center;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Adaptation du système de filtres */
+@media (max-width: 640px) {
+    .category-filter-item {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .category-filter-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
+
+/* Styles améliorés pour les grands écrans */
+@media (min-width: 1800px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        max-width: 2000px;
+    }
+    
+    .container,
+    .admin-container {
+        max-width: 2000px;
+        padding: 0 50px;
+    }
+}

@@ -92,7 +92,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
             </ul>
         </nav>
+        
+        <!-- Hamburger pour menu mobile -->
+        <div class="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
+    
+    <!-- Navigation mobile -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><a href="Accueil.php">Accueil</a></li>
+            <li><a href="login.php">Connexion</a></li>
+            <li>
+                <button id="mobile-theme-toggle" class="theme-toggle" title="Changer de thème">
+                    <span id="mobile-theme-icon">☀️</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
     
     <main class="login-container">
         <div class="login-form register-form">
@@ -133,5 +153,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </footer>
     
     <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/mobile-menu.js"></script>
 </body>
 </html>

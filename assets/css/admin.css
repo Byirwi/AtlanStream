@@ -372,30 +372,3 @@ select {
     font-size: 0.75rem;
     white-space: nowrap;
 }
-
-/* Form Buttons */
-.form-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid var(--input-border);
-}
-
-.form-buttons .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 140px;
-    transition: all 0.3s ease;
-}
-
-.form-buttons .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
-}
-
-.form-buttons .btn i {
-    font-size: 16px;
-}

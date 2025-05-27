@@ -163,8 +163,8 @@ try {
             // Afficher l'indicateur de chargement
             loadingIndicator.style.display = 'block';
             
-            // Utiliser le fichier de test d'abord pour vérifier que l'AJAX fonctionne
-            fetch('../assets/ajax/test.php')
+            // Utiliser le fichier de recherche principal
+            fetch('../assets/ajax/search_movies.php?q=' + encodeURIComponent(searchTerm))
                 .then(response => {
                     console.log('Réponse reçue:', response);
                     if (!response.ok) {
@@ -176,11 +176,14 @@ try {
                     console.log('Données reçues:', data);
                     loadingIndicator.style.display = 'none';
                     
-                    // Si le test fonctionne, afficher un message temporaire
-                    searchResults.innerHTML = '<p>Test réussi! Heure du serveur: ' + data.time + '</p>';
-                    
-                    // Une fois que le test fonctionne, vous pouvez revenir à la version originale
-                    // avec search_movies.php
+                    if (data.success) {
+                        // Mettre à jour les résultats de recherche
+                        searchResults.innerHTML = data.html;
+                        console.log('Nombre de résultats:', data.count);
+                    } else {
+                        // Afficher un message d'erreur
+                        searchResults.innerHTML = '<p class="error-message">' + data.message + '</p>';
+                    }
                 })
                 .catch(error => {
                     console.error('Erreur AJAX:', error);

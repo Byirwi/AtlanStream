@@ -18,30 +18,59 @@ try {
         throw new Exception("Utilisateur non connecté");
     }
     
-    // Vérifier le paramètre de recherche
+    // Récupérer le terme de recherche
     $searchTerm = isset($_GET['q']) ? trim($_GET['q']) : '';
     if (empty($searchTerm)) {
         throw new Exception("Veuillez entrer un terme de recherche");
     }
     
-    // Version ultra-simplifiée : récupérer tous les films
-    // Cette requête ne devrait pas causer d'erreurs
-    $stmt = $pdo->query("SELECT * FROM movies LIMIT 10");
+    // Requête de recherche simplifiée
+    $stmt = $pdo->prepare("SELECT * FROM movies WHERE title LIKE ? ORDER BY id DESC LIMIT 20");
+    $stmt->execute(['%' . $searchTerm . '%']);
     $movies = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Générer une réponse HTML minimale
+    // Générer une réponse HTML
     $html = '';
     if (count($movies) > 0) {
         foreach ($movies as $movie) {
             $html .= '<div class="movie-card">';
+            
+            // Admin controls
+            if (isAdmin()) {
+                $html .= '<div class="admin-controls">';
+                $html .= '<a href="../../pages/admin/admin_edit-film.php?id=' . $movie['id'] . '" class="edit-btn" title="Modifier">✏️</a>';
+                $html .= '<a href="../../pages/admin/admin_films.php?delete=' . $movie['id'] . '" class="delete-btn" title="Supprimer" onclick="return confirm(\'Êtes-vous sûr de vouloir supprimer ce film?\')">🗑️</a>';
+                $html .= '</div>';
+            }
+            
+            // Poster
+            $poster = !empty($movie['poster_url']) && file_exists(__DIR__ . '/../../public/images/' . $movie['poster_url']) 
+                ? '../../public/images/' . $movie['poster_url'] 
+                : '../../public/images/default.jpg';
+            
+            $html .= '<div class="movie-poster">';
+            $html .= '<img src="' . $poster . '" alt="' . htmlspecialchars($movie['title']) . '">';
+            $html .= '</div>';
+            
+            // Movie info
             $html .= '<div class="movie-info">';
             $html .= '<h3>' . htmlspecialchars($movie['title']) . '</h3>';
+            
+            if (isAdmin()) {
+                $html .= '<small style="color: #999;">[ID: ' . $movie['id'] . ']</small>';
+            }
+            
+            if (!empty($movie['year'])) {
+                $html .= '<div class="movie-year">' . htmlspecialchars($movie['year']) . '</div>';
+            }
+            
             $html .= '<p>' . htmlspecialchars($movie['description']) . '</p>';
-            $html .= '</div>';
-            $html .= '</div>';
+            $html .= '<span class="movie-category">Film</span>';
+            $html .= '</div>'; // End movie-info
+            $html .= '</div>'; // End movie-card
         }
     } else {
-        $html = '<p>Aucun film trouvé</p>';
+        $html = '<p class="no-results">Aucun film ne correspond à votre recherche "' . htmlspecialchars($searchTerm) . '"</p>';
     }
     
     // Retourner le résultat en JSON
@@ -50,7 +79,7 @@ try {
         'success' => true,
         'count' => count($movies),
         'html' => $html,
-        'debug' => 'Recherche réussie'
+        'query' => $searchTerm
     ]);
     
 } catch (Exception $e) {

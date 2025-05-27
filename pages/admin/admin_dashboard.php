@@ -43,13 +43,22 @@ try {
     <title>Tableau de bord - AtlanStream Admin</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <link rel="stylesheet" href="../../assets/css/mobile.css">
+    <link rel="stylesheet" href="../../assets/css/animated-menu.css">
 </head>
 <body class="dark">
+    <!-- Animation de chargement -->
+    <div class="loading-screen">
+        <div class="loading-indicator"></div>
+    </div>
+
     <header>
         <div class="logo">
             <h1>AtlanStream <span style="color:#E53E3E">Admin</span></h1>
         </div>
-        <nav>
+        
+        <!-- Navigation desktop animée -->
+        <nav class="desktop-menu">
             <ul>
                 <li><span class="welcome-user">Admin: <?php echo htmlspecialchars($_SESSION['username'] ?? 'Inconnu'); ?></span></li>
                 <li><a href="../Accueil.php">Voir le site</a></li>
@@ -62,12 +71,15 @@ try {
             </ul>
         </nav>
         
-        <!-- Hamburger pour menu mobile -->
-        <div class="mobile-menu-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <!-- Hamburger pour menu mobile - nouvelle version -->
+        <button class="mobile-menu-toggle" aria-label="Menu">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
     </header>
     
     <!-- Navigation mobile -->
@@ -126,5 +138,6 @@ try {
     
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/mobile-menu.js"></script>
+    <script src="../../assets/js/animated-menu.js"></script>
 </body>
 </html>

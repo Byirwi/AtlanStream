@@ -75,13 +75,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AtlanStream - Inscription</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/mobile.css">
+    <link rel="stylesheet" href="../assets/css/animated-menu.css">
 </head>
 <body class="dark">
+    <!-- Animation de chargement -->
+    <div class="loading-screen">
+        <div class="loading-indicator"></div>
+    </div>
+
     <header>
         <div class="logo">
             <h1>AtlanStream</h1>
         </div>
-        <nav>
+        
+        <!-- Navigation desktop animée -->
+        <nav class="desktop-menu">
             <ul>
                 <li><a href="Accueil.php">Accueil</a></li>
                 <li><a href="login.php">Connexion</a></li>
@@ -93,12 +102,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </ul>
         </nav>
         
-        <!-- Hamburger pour menu mobile -->
-        <div class="mobile-menu-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <!-- Hamburger pour menu mobile - nouvelle version -->
+        <button class="mobile-menu-toggle" aria-label="Menu">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
     </header>
     
     <!-- Navigation mobile -->
@@ -154,5 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/mobile-menu.js"></script>
+    <script src="../assets/js/animated-menu.js"></script>
 </body>
 </html>

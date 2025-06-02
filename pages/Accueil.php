@@ -72,7 +72,7 @@ require_once '../includes/admin-auth.php';
                     <li style="--item-index: <?= $menuIndex++ ?>"><a href="catalogue.php">Catalogue</a></li>
                     <li style="--item-index: <?= $menuIndex++ ?>"><a href="favoris.php">Mes Favoris</a></li>
                     <li style="--item-index: <?= $menuIndex++ ?>"><a href="compte.php">Mon compte</a></li>
-                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="test_fun.php">Test fun/a></li>
+                    <li style="--item-index: <?= $menuIndex++ ?>"><a href="test_fun.php">Test fun</a></li>
                     <?php if (isAdmin()): ?>
                         <li style="--item-index: <?= $menuIndex++ ?>"><a href="#" class="admin-dropdown-toggle">Admin ▾</a>
                             <ul class="admin-dropdown">

@@ -104,6 +104,7 @@ require_once '../includes/admin-auth.php';
             <div class="cta-buttons">
                 <?php if (isLoggedIn()): ?>
                     <a href="catalogue.php" class="btn btn-primary">Explorer le catalogue</a>
+                    <a href="test_fun.php">Test fun</a>
                 <?php else: ?>
                     <a href="login.php" class="btn btn-primary">Se connecter</a>
                     <a href="register.php" class="btn btn-secondary">S'inscrire</a>

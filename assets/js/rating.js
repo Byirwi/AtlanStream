@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 console.log('Données get_user_rating:', data);
                 if (data.success && data.rating) {
-                    document.querySelector(`#star${data.rating}`).checked = true;
+                    const starElement = document.querySelector(`#star${data.rating}`);
+                    if (starElement) {
+                        starElement.checked = true;
+                    }
                 }
             })
             .catch(error => console.error('Erreur lors de la récupération de la note:', error));
@@ -57,6 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Mettre à jour l'affichage de la note moyenne immédiatement
                     updateRatingDisplay(movieId);
+                    
+                    // Effacer le message après 3 secondes
+                    setTimeout(() => {
+                        ratingMessage.textContent = '';
+                        ratingMessage.className = 'rating-message';
+                    }, 3000);
                 } else {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message error';
@@ -79,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const ratingDisplay = document.querySelector('.rating-display');
                     if (ratingDisplay) {
                         const stars = ratingDisplay.querySelectorAll('.star');
+                        const ratingText = ratingDisplay.querySelector('.rating-text');
                         const ratingCount = ratingDisplay.querySelector('.rating-count');
                         
                         // Mettre à jour les étoiles
@@ -91,9 +101,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         
                         // Mettre à jour le texte de la note
-                        if (ratingCount) {
-                            ratingCount.textContent = `${data.rating.average}/5 (${data.rating.count} votes)`;
+                        if (ratingText) {
+                            ratingText.textContent = `${data.rating.average}/5`;
                         }
+                        
+                        if (ratingCount) {
+                            ratingCount.textContent = `(${data.rating.count} vote${data.rating.count > 1 ? 's' : ''})`;
+                        }
+                        
+                        // Animation de mise à jour
+                        ratingDisplay.style.transform = 'scale(1.1)';
+                        setTimeout(() => {
+                            ratingDisplay.style.transform = 'scale(1)';
+                        }, 300);
                     }
                 }
             })

@@ -55,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message success';
                     
-                    // Rafraîchir la page après 1.5 secondes
-                    setTimeout(() => window.location.reload(), 1500);
+                    // Mettre à jour l'affichage de la note moyenne immédiatement
+                    updateRatingDisplay(movieId);
                 } else {
                     ratingMessage.textContent = data.message;
                     ratingMessage.className = 'rating-message error';
@@ -68,5 +68,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 ratingMessage.className = 'rating-message error';
             });
         });
+    }
+    
+    // Fonction pour mettre à jour l'affichage de la note moyenne
+    function updateRatingDisplay(movieId) {
+        fetch(`../../assets/ajax/get_movie_rating.php?movie_id=${movieId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const ratingDisplay = document.querySelector('.rating-display');
+                    if (ratingDisplay) {
+                        const stars = ratingDisplay.querySelectorAll('.star');
+                        const ratingCount = ratingDisplay.querySelector('.rating-count');
+                        
+                        // Mettre à jour les étoiles
+                        stars.forEach((star, index) => {
+                            if (index < Math.round(data.rating.average)) {
+                                star.classList.add('filled');
+                            } else {
+                                star.classList.remove('filled');
+                            }
+                        });
+                        
+                        // Mettre à jour le texte de la note
+                        if (ratingCount) {
+                            ratingCount.textContent = `${data.rating.average}/5 (${data.rating.count} votes)`;
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour de l\'affichage:', error);
+            });
     }
 });

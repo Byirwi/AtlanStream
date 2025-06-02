@@ -33,14 +33,55 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.remove('is-favorite');
                         this.title = 'Ajouter aux favoris';
                     }
+                    
+                    // Afficher un message de confirmation temporaire
+                    showNotification(data.message, 'success');
                 } else {
-                    alert(data.message);
+                    showNotification(data.message, 'error');
                 }
             })
             .catch(error => {
                 console.error('Erreur lors de la gestion des favoris:', error);
-                alert('Une erreur s\'est produite lors de la gestion des favoris');
+                showNotification('Une erreur s\'est produite lors de la gestion des favoris', 'error');
             });
         });
+    }
+    
+    // Fonction pour afficher des notifications temporaires
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            ${type === 'success' ? 'background-color: #48bb78;' : 'background-color: #e53e3e;'}
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animer l'entrée
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Supprimer après 3 secondes
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 });

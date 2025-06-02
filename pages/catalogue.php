@@ -244,7 +244,7 @@ try {
         const applyFiltersBtn = document.getElementById('apply-filters');
         const categoryFilters = document.querySelectorAll('.category-filter');
         const allCategoriesCheckbox = document.getElementById('cat-all');
-        
+    }
         // Gérer la sélection de "Toutes les catégories"
         allCategoriesCheckbox.addEventListener('change', function() {
             if (this.checked) {
@@ -340,6 +340,7 @@ try {
                     searchResults.innerHTML = '<p class="error-message">Erreur: ' + error.message + '</p>';
                 });
         }
+    
         
         // Événement de clic sur le bouton de recherche
         searchButton.addEventListener('click', performSearch);
